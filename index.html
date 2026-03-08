@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-102 Reference Guide — Ewoud's Studiegids</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #334155;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #475569;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 2rem;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
+  h2 {
+    font-size: 1.4rem;
+    color: var(--accent2);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--accent2);
+    padding-left: 0.75rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+    color: var(--green);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  p, li { margin-bottom: 0.4rem; }
+  ul { padding-left: 1.5rem; }
+  li::marker { color: var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--accent);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--accent);
+  }
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:hover td { background: var(--surface); }
+
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .tag-green { background: #064e3b; color: var(--green); }
+  .tag-yellow { background: #713f12; color: var(--yellow); }
+  .tag-red { background: #7f1d1d; color: var(--red); }
+  .tag-blue { background: #1e3a5f; color: var(--accent); }
+
+  code {
+    background: var(--surface2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.88rem;
+    color: var(--green);
+  }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    margin: 0.75rem 0;
+  }
+  pre code { background: none; padding: 0; }
+
+  .pipeline {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .pipeline .highlight { color: var(--accent); font-weight: 600; }
+  .pipeline .node { color: var(--green); }
+
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0;
+  }
+  .glossary-grid dt {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.92rem;
+  }
+  .glossary-grid dd {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.92rem;
+  }
+
+  .lesson {
+    border-left: 3px solid var(--yellow);
+    padding-left: 0.75rem;
+    margin: 0.75rem 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .toc { margin: 1.5rem 0; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .toc li { margin-bottom: 0.3rem; }
+
+  .updated {
+    text-align: right;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    .glossary-grid { grid-template-columns: 1fr; }
+    .glossary-grid dt { border-bottom: none; padding-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🎓 AI-102 Reference Guide</h1>
+<p class="subtitle">Ewoud's persoonlijke studiegids — alles wat we geleerd hebben, op één plek.<br>
+<span class="tag tag-blue">Fase 1</span> AI-102 Certificering · mrt–apr 2026</p>
+
+<nav class="toc">
+<strong>Inhoud</strong>
+<ul>
+  <li><a href="#ml-fundamentals">1. ML Fundamentals</a></li>
+  <li><a href="#prompt-engineering">2. Prompt Engineering</a></li>
+  <li><a href="#responsible-ai">3. Responsible AI</a></li>
+  <li><a href="#azure-ai-services">4. Azure AI Services</a></li>
+  <li><a href="#azure-openai">5. Azure OpenAI Service</a></li>
+  <li><a href="#ai-search">6. Azure AI Search</a></li>
+  <li><a href="#rag">7. RAG Pattern</a></li>
+  <li><a href="#lessons">8. Geleerde Lessen</a></li>
+  <li><a href="#glossary">9. Begrippenlijst</a></li>
+</ul>
+</nav>
+
+<!-- ===== 1. ML FUNDAMENTALS ===== -->
+<h2 id="ml-fundamentals">1. ML Fundamentals</h2>
+
+<div class="card">
+<div class="card-title">Supervised vs Unsupervised Learning</div>
+<ul>
+  <li><strong>Supervised:</strong> gelabelde data → model leert input→output mapping (classificatie, regressie)</li>
+  <li><strong>Unsupervised:</strong> geen labels → model vindt patronen zelf (clustering, dimensionaliteitsreductie)</li>
+  <li><strong>Reinforcement:</strong> agent leert door trial & error met beloningen</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">LLM Basics</div>
+<ul>
+  <li><strong>Transformer architectuur:</strong> attention mechanisme, parallelle verwerking van tokens</li>
+  <li><strong>Tokens:</strong> kleinste eenheid (~4 chars EN, ~2-3 chars NL), bepalen kosten en context limiet</li>
+  <li><strong>Context window:</strong> maximale input+output tokens (GPT-4o: 128K input)</li>
+  <li><strong>Temperature:</strong> 0 = deterministisch, 1+ = creatief/random. Bij gegronde RAG: weinig effect omdat retrieval het antwoord stuurt</li>
+</ul>
+</div>
+
+<!-- ===== 2. PROMPT ENGINEERING ===== -->
+<h2 id="prompt-engineering">2. Prompt Engineering</h2>
+
+<div class="card">
+<div class="card-title">Rollen</div>
+<ul>
+  <li><code>system</code> — instructies, persona, regels (altijd eerste message)</li>
+  <li><code>user</code> — de vraag/input van de gebruiker</li>
+  <li><code>assistant</code> — het antwoord van het model (of few-shot voorbeelden)</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Technieken</div>
+<ul>
+  <li><strong>Zero-shot:</strong> directe vraag zonder voorbeelden</li>
+  <li><strong>Few-shot:</strong> voorbeelden van gewenste input→output in de prompt</li>
+  <li><strong>Chain-of-Thought (CoT):</strong> "Denk stap voor stap" — model toont redenering, betere resultaten bij complexe vragen</li>
+  <li><strong>Query translation:</strong> NL query → EN vertaling in system prompt voor EN documenten</li>
+  <li><strong>Grounding:</strong> model beperken tot gegeven context. Te streng = weigert alles, te los = hallucineert</li>
+</ul>
+</div>
+
+<div class="lesson">
+💡 Grounding balans: itereer op de prompt. Start streng, versoepel tot het model correct antwoordt zonder te hallucineren.
+</div>
+
+<!-- ===== 3. RESPONSIBLE AI ===== -->
+<h2 id="responsible-ai">3. Responsible AI</h2>
+
+<div class="card">
+<div class="card-title">Microsoft's 6 Principes</div>
+<ul>
+  <li><strong>Fairness</strong> — geen discriminatie of bias</li>
+  <li><strong>Reliability & Safety</strong> — consistent en veilig gedrag</li>
+  <li><strong>Privacy & Security</strong> — databescherming</li>
+  <li><strong>Inclusiveness</strong> — toegankelijk voor iedereen</li>
+  <li><strong>Transparency</strong> — uitlegbaar, gebruiker weet dat het AI is</li>
+  <li><strong>Accountability</strong> — mensen blijven verantwoordelijk</li>
+</ul>
+</div>
+
+<!-- ===== 4. AZURE AI SERVICES ===== -->
+<h2 id="azure-ai-services">4. Azure AI Services</h2>
+
+<div class="card">
+<div class="card-title">Service Categorieën</div>
+<table>
+  <tr><th>Categorie</th><th>Services</th><th>Voorbeelden</th></tr>
+  <tr><td>Vision</td><td>Computer Vision, Custom Vision, Face API</td><td>OCR, beeldanalyse, gezichtsherkenning</td></tr>
+  <tr><td>Language</td><td>Text Analytics, Translator, CLU, QnA</td><td>Sentiment, NER, vertaling, conversational</td></tr>
+  <tr><td>Speech</td><td>Speech-to-Text, Text-to-Speech</td><td>Transcriptie, voorlezen, real-time vertaling</td></tr>
+  <tr><td>Decision</td><td>Content Safety, Personalizer</td><td>Content moderatie, aanbevelingen</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Multi-service vs Single-service Resource</div>
+<ul>
+  <li><strong>Multi-service:</strong> één resource, één key voor meerdere AI services — handig, minder beheer</li>
+  <li><strong>Single-service:</strong> aparte resource per service — meer controle, apart RBAC/budget</li>
+  <li><strong>Document Intelligence</strong> (≠ OCR): gestructureerde extractie uit formulieren, facturen, ID's</li>
+</ul>
+</div>
+
+<!-- ===== 5. AZURE OPENAI ===== -->
+<h2 id="azure-openai">5. Azure OpenAI Service</h2>
+
+<div class="card">
+<div class="card-title">Deployment Types</div>
+<table>
+  <tr><th>Type</th><th>Kenmerken</th></tr>
+  <tr><td><strong>Standard</strong></td><td>Pay-per-token, auto-upgrade naar nieuwere model versies, gedeelde capaciteit</td></tr>
+  <tr><td><strong>Provisioned (PTU)</strong></td><td>Gereserveerde throughput, voorspelbare kosten, voor productie workloads</td></tr>
+  <tr><td><strong>Global</strong></td><td>Microsoft kiest optimale regio, hogere limieten, data kan buiten je regio</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Quota & Content Filtering</div>
+<ul>
+  <li><strong>Quota:</strong> gedeeld per model per regio (niet per deployment!) — TPM (tokens per minute)</li>
+  <li><strong>Content filtering:</strong> 4 categorieën — <span class="tag tag-red">HVSS</span>: Hate, Violence, Sexual, Self-harm</li>
+  <li>Content filtering ≠ grounding — filtering blokkeert schadelijke content, grounding voorkomt hallucinaties</li>
+  <li><strong>Groundedness detection:</strong> apart feature dat checkt of output gebaseerd is op gegeven context</li>
+  <li>Model docs: altijd via <strong>Microsoft Learn</strong> (niet openai.com) voor Azure-specifieke info</li>
+</ul>
+</div>
+
+<!-- ===== 6. AI SEARCH ===== -->
+<h2 id="ai-search">6. Azure AI Search</h2>
+
+<div class="card">
+<div class="card-title">Indexing Pipeline</div>
+<pre class="pipeline"><span class="highlight">Data Source</span> → <span class="highlight">Indexer</span> → (<span class="highlight">Skillset</span>) → <span class="highlight">Index</span>
+
+<span class="node">Data Source:</span> Blob Storage, SQL, Cosmos DB, etc.
+<span class="node">Indexer:</span>     Motor die data leest, change tracking, schema-based of on-demand
+<span class="node">Skillset:</span>   Verrijkingspipeline (keten van skills)
+<span class="node">Index:</span>      Schema met velden (type + attributen: searchable, filterable, sortable, facetable, retrievable)</pre>
+</div>
+
+<div class="card">
+<div class="card-title">Skillset — Enrichment Tree</div>
+<pre class="pipeline">Document
+├── content <span class="muted">(originele tekst)</span>
+├── normalized_images[]
+│   └── <span class="node">[OCR skill]</span> → text per afbeelding
+└── <span class="node">[Merge skill]</span> → merged_content <span class="muted">(tekst + OCR samen!)</span>
+    └── <span class="node">[Split skill]</span> → chunks[]
+        └── <span class="node">[Embedding skill]</span> → vector per chunk</pre>
+<p><strong>Merge skill</strong> is essentieel: zonder merge verlies je óf de originele tekst óf de OCR-output bij gescande documenten.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Search Types</div>
+<table>
+  <tr><th>Type</th><th>Mechanisme</th><th>Sterk bij</th><th>Zwak bij</th></tr>
+  <tr>
+    <td><strong>Full-Text (BM25)</strong></td>
+    <td>Inverted index, TF-IDF scoring</td>
+    <td>Exacte termen, codes, namen</td>
+    <td>Synoniemen, parafrases, cross-language</td>
+  </tr>
+  <tr>
+    <td><strong>Vector (KNN)</strong></td>
+    <td>HNSW algoritme, cosine similarity op embeddings</td>
+    <td>Semantisch begrip, synoniemen, cross-language</td>
+    <td>Exacte matches, namen, codes</td>
+  </tr>
+  <tr>
+    <td><strong>Hybrid</strong></td>
+    <td>BM25 + Vector parallel → RRF combinatie</td>
+    <td>Bijna altijd beste keuze</td>
+    <td>—</td>
+  </tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Query Pipeline (Hybrid + Semantic Ranker)</div>
+<pre class="pipeline">Query
+├── Tokenize → <span class="node">BM25 search</span> (inverted index) → ranked list A
+├── Embed   → <span class="node">Vector search</span> (HNSW)          → ranked list B
+└── <span class="highlight">RRF</span>: merge list A + B → top-N resultaten
+    └── <span class="highlight">Semantic Ranker</span>: re-rank top-N → final results + captions + answers</pre>
+</div>
+
+<div class="card">
+<div class="card-title">Semantic Ranker</div>
+<ul>
+  <li>Geen search type — het is een <strong>L2 re-ranking stap</strong> (post-processing)</li>
+  <li>Herordent top resultaten met een deep learning model op semantische relevantie</li>
+  <li>Voegt <strong>captions</strong> (meest relevante passage) en <strong>answers</strong> (direct antwoord) toe</li>
+  <li>Werkt alleen op tekstvelden, niet op vectoren</li>
+  <li>Beschikbaar vanaf Standard tier, apart geprijsd per 1000 queries</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Security Trimming</div>
+<ul>
+  <li>Document-level access control via een <strong>filterveld</strong> (bijv. <code>allowed_groups</code>)</li>
+  <li>Bij indexeren: vul per document welke groepen toegang hebben</li>
+  <li>Bij query: OData filter meesturen → <code>$filter=allowed_groups/any(g: g eq 'engineering')</code></li>
+  <li>App haalt groepen op via Microsoft Entra ID en bouwt het filter</li>
+  <li>Niet: aparte indexes per afdeling (schaalt niet)</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Index Vullen: Push vs Pull</div>
+<ul>
+  <li><strong>Push:</strong> jij stuurt data naar de index via de REST API — meer controle, real-time</li>
+  <li><strong>Pull:</strong> indexer draait op schema (bijv. elke 5 min) en checkt data source op wijzigingen</li>
+</ul>
+</div>
+
+<!-- ===== 7. RAG ===== -->
+<h2 id="rag">7. RAG Pattern</h2>
+
+<div class="card">
+<div class="card-title">Retrieval-Augmented Generation</div>
+<pre class="pipeline">User Query
+  → <span class="node">Retrieval</span> (AI Search: hybrid + semantic ranker)
+  → Top-K chunks als context
+  → <span class="node">Generation</span> (Azure OpenAI: system prompt + context + query)
+  → Gegrond antwoord</pre>
+<ul>
+  <li>Chunking is essentieel: te groot = irrelevante context, te klein = context verlies</li>
+  <li>Temperature heeft weinig effect bij goed gegronde RAG — retrieval stuurt het antwoord</li>
+</ul>
+</div>
+
+<!-- ===== 8. LESSONS ===== -->
+<h2 id="lessons">8. Geleerde Lessen</h2>
+
+<div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
+<div class="lesson">💡 Tier limieten: Basic = max 16MB per blob, S1 = max 128MB</div>
+<div class="lesson">💡 RBAC debugging: controleer altijd of de managed identity de juiste rollen heeft op alle resources</div>
+<div class="lesson">💡 Prompt iteratie: begin streng (geen hallucinaties), versoepel geleidelijk</div>
+<div class="lesson">💡 Quota is gedeeld per model per regio, niet per deployment</div>
+<div class="lesson">💡 Standard deployments auto-upgraden naar nieuwere model versies</div>
+<div class="lesson">💡 Content filtering (HVSS) ≠ grounding — twee aparte concepten</div>
+<div class="lesson">💡 Groundedness check = hallucination detection (is het antwoord gebaseerd op de context?)</div>
+
+<!-- ===== 9. GLOSSARY ===== -->
+<h2 id="glossary">9. Begrippenlijst</h2>
+
+<div class="card">
+<dl class="glossary-grid">
+  <dt>BM25</dt>
+  <dd>Best Match 25 — standaard ranking algoritme voor full-text search (term frequency × inverse document frequency)</dd>
+
+  <dt>Chunking</dt>
+  <dd>Tekst opdelen in kleinere stukken zodat elke chunk apart geëmbedded en geretrievet kan worden</dd>
+
+  <dt>CoT</dt>
+  <dd>Chain-of-Thought — prompt techniek waarbij het model stapsgewijs redeneert voor betere antwoorden</dd>
+
+  <dt>Content Filtering</dt>
+  <dd>Azure OpenAI feature dat schadelijke content blokkeert in 4 categorieën (HVSS)</dd>
+
+  <dt>Cosine Similarity</dt>
+  <dd>Maat voor gelijkenis tussen twee vectoren (1 = identiek, 0 = geen relatie)</dd>
+
+  <dt>Embedding</dt>
+  <dd>Numerieke vectorrepresentatie van tekst die semantische betekenis vastlegt</dd>
+
+  <dt>Enrichment Tree</dt>
+  <dd>Boomstructuur van skill inputs/outputs binnen een AI Search skillset</dd>
+
+  <dt>Few-shot</dt>
+  <dd>Prompt techniek met voorbeelden van gewenste input→output in de prompt</dd>
+
+  <dt>Grounding</dt>
+  <dd>Model beperken tot alleen antwoorden op basis van gegeven context (voorkomt hallucinaties)</dd>
+
+  <dt>Groundedness</dt>
+  <dd>Mate waarin een antwoord gebaseerd is op de aangeleverde context (≈ hallucination check)</dd>
+
+  <dt>Hallucination</dt>
+  <dd>Model genereert informatie die niet in de context staat — klinkt overtuigend maar is verzonnen</dd>
+
+  <dt>HNSW</dt>
+  <dd>Hierarchical Navigable Small World — algoritme voor snelle approximate nearest neighbor search in vector spaces</dd>
+
+  <dt>HVSS</dt>
+  <dd>Hate, Violence, Sexual, Self-harm — de 4 content filtering categorieën in Azure OpenAI</dd>
+
+  <dt>Hybrid Search</dt>
+  <dd>Full-text (BM25) + vector search parallel, gecombineerd via RRF</dd>
+
+  <dt>Indexer</dt>
+  <dd>AI Search component dat data uit een source haalt, door skillset duwt, en in de index stopt</dd>
+
+  <dt>Inverted Index</dt>
+  <dd>Datastructuur die woorden mapt naar documenten (zoals de index achteraan in een boek)</dd>
+
+  <dt>KNN</dt>
+  <dd>K-Nearest Neighbors — zoek de K dichtstbijzijnde vectoren bij een query vector</dd>
+
+  <dt>L2 Re-ranker</dt>
+  <dd>Tweede-fase ranking model dat initiële zoekresultaten herordent op semantische relevantie</dd>
+
+  <dt>Managed Identity</dt>
+  <dd>Azure-beheerde identiteit voor resources — geen credentials nodig, automatische rotatie</dd>
+
+  <dt>Merge Skill</dt>
+  <dd>AI Search skill die originele tekst en OCR-output samenvoegt tot één tekstveld</dd>
+
+  <dt>OCR</dt>
+  <dd>Optical Character Recognition — tekst herkennen uit afbeeldingen/gescande documenten</dd>
+
+  <dt>PTU</dt>
+  <dd>Provisioned Throughput Units — gereserveerde capaciteit voor Azure OpenAI (voorspelbare kosten)</dd>
+
+  <dt>RAG</dt>
+  <dd>Retrieval-Augmented Generation — relevante documenten ophalen en meegeven als context aan een LLM</dd>
+
+  <dt>RRF</dt>
+  <dd>Reciprocal Rank Fusion — methode om ranked lists uit verschillende search types te combineren</dd>
+
+  <dt>Semantic Ranker</dt>
+  <dd>AI Search post-processing stap die zoekresultaten herordent met een deep learning model + captions/answers toevoegt</dd>
+
+  <dt>Skillset</dt>
+  <dd>AI Search verrijkingspipeline — keten van skills die documenten transformeren tijdens indexering</dd>
+
+  <dt>Security Trimming</dt>
+  <dd>Document-level access control via filtervelden op query-time (niet aparte indexes)</dd>
+
+  <dt>Temperature</dt>
+  <dd>Parameter die randomness/creativiteit van LLM output regelt (0 = deterministisch, 1+ = creatief)</dd>
+
+  <dt>TF-IDF</dt>
+  <dd>Term Frequency × Inverse Document Frequency — hoe belangrijk is een woord voor een document</dd>
+
+  <dt>Token</dt>
+  <dd>Kleinste teksteenheid voor LLM's (~4 karakters EN), bepaalt kosten en context limiet</dd>
+
+  <dt>TPM</dt>
+  <dd>Tokens Per Minute — quota-eenheid voor Azure OpenAI, gedeeld per model per regio</dd>
+
+  <dt>Transformer</dt>
+  <dd>Neural network architectuur achter moderne LLM's — attention mechanisme voor parallelle verwerking</dd>
+
+  <dt>Vector Search</dt>
+  <dd>Zoeken op basis van semantische afstand tussen embedding vectoren (cosine similarity)</dd>
+
+  <dt>Zero-shot</dt>
+  <dd>Prompt zonder voorbeelden — direct een vraag stellen aan het model</dd>
+</dl>
+</div>
+
+<p class="updated">Laatste update: 8 maart 2026 · Sessie 4: Azure AI Search deep dive</p>
+
+</body>
+</html>
