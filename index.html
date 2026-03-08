@@ -36,14 +36,45 @@
     margin-bottom: 0.5rem;
   }
   .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
-  h2 {
+
+  /* Collapsible sections */
+  details {
+    margin-top: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  details[open] {
+    border-color: var(--accent2);
+  }
+  summary {
     font-size: 1.4rem;
     color: var(--accent2);
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    background: var(--surface);
     border-left: 4px solid var(--accent2);
-    padding-left: 0.75rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '▶';
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+    color: var(--muted);
+  }
+  details[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  summary:hover { background: var(--surface2); }
+  .section-content {
+    padding: 1rem 1.25rem;
+  }
+
   h3 {
     font-size: 1.1rem;
     color: var(--green);
@@ -157,6 +188,23 @@
   .toc a:hover { text-decoration: underline; }
   .toc li { margin-bottom: 0.3rem; }
 
+  /* Expand/collapse all buttons */
+  .controls {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  .controls button {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .controls button:hover { background: var(--accent2); color: var(--bg); }
+
   .updated {
     text-align: right;
     color: var(--muted);
@@ -170,6 +218,7 @@
     body { padding: 1rem; }
     .glossary-grid { grid-template-columns: 1fr; }
     .glossary-grid dt { border-bottom: none; padding-bottom: 0; }
+    summary { font-size: 1.1rem; }
   }
 </style>
 </head>
@@ -179,8 +228,13 @@
 <p class="subtitle">Ewoud's persoonlijke studiegids — alles wat we geleerd hebben, op één plek.<br>
 <span class="tag tag-blue">Fase 1</span> AI-102 Certificering · mrt–apr 2026</p>
 
+<div class="controls">
+  <button onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">📖 Alles openen</button>
+  <button onclick="document.querySelectorAll('details').forEach(d=>d.open=false)">📕 Alles sluiten</button>
+</div>
+
 <nav class="toc">
-<strong>Inhoud</strong>
+<strong>Inhoud</strong> <span style="color:var(--muted);font-size:0.85rem">(klik om te navigeren)</span>
 <ul>
   <li><a href="#ml-fundamentals">1. ML Fundamentals</a></li>
   <li><a href="#prompt-engineering">2. Prompt Engineering</a></li>
@@ -195,7 +249,9 @@
 </nav>
 
 <!-- ===== 1. ML FUNDAMENTALS ===== -->
-<h2 id="ml-fundamentals">1. ML Fundamentals</h2>
+<details id="ml-fundamentals">
+<summary>1. ML Fundamentals</summary>
+<div class="section-content">
 
 <div class="card">
 <div class="card-title">Supervised vs Unsupervised Learning</div>
@@ -216,8 +272,13 @@
 </ul>
 </div>
 
+</div>
+</details>
+
 <!-- ===== 2. PROMPT ENGINEERING ===== -->
-<h2 id="prompt-engineering">2. Prompt Engineering</h2>
+<details id="prompt-engineering">
+<summary>2. Prompt Engineering</summary>
+<div class="section-content">
 
 <div class="card">
 <div class="card-title">Rollen</div>
@@ -243,8 +304,13 @@
 💡 Grounding balans: itereer op de prompt. Start streng, versoepel tot het model correct antwoordt zonder te hallucineren.
 </div>
 
+</div>
+</details>
+
 <!-- ===== 3. RESPONSIBLE AI ===== -->
-<h2 id="responsible-ai">3. Responsible AI</h2>
+<details id="responsible-ai">
+<summary>3. Responsible AI</summary>
+<div class="section-content">
 
 <div class="card">
 <div class="card-title">Microsoft's 6 Principes</div>
@@ -258,8 +324,13 @@
 </ul>
 </div>
 
+</div>
+</details>
+
 <!-- ===== 4. AZURE AI SERVICES ===== -->
-<h2 id="azure-ai-services">4. Azure AI Services</h2>
+<details id="azure-ai-services">
+<summary>4. Azure AI Services</summary>
+<div class="section-content">
 
 <div class="card">
 <div class="card-title">Service Categorieën</div>
@@ -281,8 +352,13 @@
 </ul>
 </div>
 
+</div>
+</details>
+
 <!-- ===== 5. AZURE OPENAI ===== -->
-<h2 id="azure-openai">5. Azure OpenAI Service</h2>
+<details id="azure-openai">
+<summary>5. Azure OpenAI Service</summary>
+<div class="section-content">
 
 <div class="card">
 <div class="card-title">Deployment Types</div>
@@ -305,8 +381,13 @@
 </ul>
 </div>
 
+</div>
+</details>
+
 <!-- ===== 6. AI SEARCH ===== -->
-<h2 id="ai-search">6. Azure AI Search</h2>
+<details id="ai-search">
+<summary>6. Azure AI Search</summary>
+<div class="section-content">
 
 <div class="card">
 <div class="card-title">Indexing Pipeline</div>
@@ -394,8 +475,13 @@
 </ul>
 </div>
 
+</div>
+</details>
+
 <!-- ===== 7. RAG ===== -->
-<h2 id="rag">7. RAG Pattern</h2>
+<details id="rag">
+<summary>7. RAG Pattern</summary>
+<div class="section-content">
 
 <div class="card">
 <div class="card-title">Retrieval-Augmented Generation</div>
@@ -410,8 +496,13 @@
 </ul>
 </div>
 
+</div>
+</details>
+
 <!-- ===== 8. LESSONS ===== -->
-<h2 id="lessons">8. Geleerde Lessen</h2>
+<details id="lessons">
+<summary>8. Geleerde Lessen</summary>
+<div class="section-content">
 
 <div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
 <div class="lesson">💡 Tier limieten: Basic = max 16MB per blob, S1 = max 128MB</div>
@@ -422,8 +513,13 @@
 <div class="lesson">💡 Content filtering (HVSS) ≠ grounding — twee aparte concepten</div>
 <div class="lesson">💡 Groundedness check = hallucination detection (is het antwoord gebaseerd op de context?)</div>
 
+</div>
+</details>
+
 <!-- ===== 9. GLOSSARY ===== -->
-<h2 id="glossary">9. Begrippenlijst</h2>
+<details id="glossary" open>
+<summary>9. Begrippenlijst</summary>
+<div class="section-content">
 
 <div class="card">
 <dl class="glossary-grid">
@@ -531,7 +627,21 @@
 </dl>
 </div>
 
+</div>
+</details>
+
 <p class="updated">Laatste update: 8 maart 2026 · Sessie 4: Azure AI Search deep dive</p>
+
+<script>
+// Open section when clicking TOC link
+document.querySelectorAll('.toc a').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const details = document.getElementById(id);
+    if (details) details.open = true;
+  });
+});
+</script>
 
 </body>
 </html>
