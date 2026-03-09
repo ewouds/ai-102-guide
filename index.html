@@ -476,6 +476,71 @@
 </ul>
 </div>
 
+<div class="card">
+<div class="card-title">Chunk-level Index met Index Projections</div>
+<p>Standaard maakt een indexer één record per document. Voor RAG wil je <strong>één record per chunk</strong> — zodat vector search specifieke fragmenten teruggeeft, niet hele documenten.</p>
+
+<h3>Document-level vs Chunk-level</h3>
+<table>
+  <tr><th>Aspect</th><th>Document-level</th><th>Chunk-level</th></tr>
+  <tr><td>Records in index</td><td>1 per document</td><td>1 per chunk</td></tr>
+  <tr><td>Embedding</td><td>1 vector per heel doc</td><td>1 vector per fragment</td></tr>
+  <tr><td>Vector search retourneert</td><td>Hele document</td><td>Specifiek relevant fragment</td></tr>
+  <tr><td>Context window gebruik</td><td>Snel vol</td><td>Precies genoeg</td></tr>
+</table>
+
+<h3>Index Projections</h3>
+<p>De <strong>indexProjections</strong> in de skillset zorgen dat elke chunk als apart record in een aparte index terechtkomt:</p>
+<pre><code>"indexProjections": {
+  "selectors": [{
+    "targetIndexName": "idx-chunks",
+    "parentKeyFieldName": "parent_id",
+    "sourceContext": "/document/chunks/*",
+    "mappings": [
+      { "name": "chunk",  "source": "/document/chunks/*" },
+      { "name": "vector", "source": "/document/chunks/*/vector" },
+      { "name": "title",  "source": "/document/metadata_storage_name" }
+    ]
+  }],
+  "parameters": {
+    "projectionMode": "skipIndexingParentDocuments"
+  }
+}</code></pre>
+
+<h3>Index Schema voor Chunks</h3>
+<table>
+  <tr><th>Veld</th><th>Type</th><th>Key</th><th>Searchable</th><th>Analyzer</th><th>Noot</th></tr>
+  <tr><td><code>chunk_id</code></td><td>Edm.String</td><td>✅</td><td>✅</td><td><code>keyword</code></td><td>Auto-generated, keyword analyzer verplicht!</td></tr>
+  <tr><td><code>parent_id</code></td><td>Edm.String</td><td></td><td></td><td></td><td>Link naar brondocument, filterable</td></tr>
+  <tr><td><code>chunk</code></td><td>Edm.String</td><td></td><td>✅</td><td></td><td>De chunk tekst</td></tr>
+  <tr><td><code>vector</code></td><td>Collection(Edm.Single)</td><td></td><td>✅</td><td></td><td>1536d (ada-002), HNSW profiel</td></tr>
+  <tr><td><code>title</code></td><td>Edm.String</td><td></td><td>✅</td><td></td><td>Bestandsnaam van parent</td></tr>
+</table>
+
+<div class="lesson">💡 Key field van een chunk index moet <code>searchable=true</code> + <code>analyzer=keyword</code> hebben — anders weigert Azure de index projection.</div>
+<div class="lesson">💡 <code>sourceContext</code> moet exact matchen met de output van je split skill (bijv. <code>/document/chunks/*</code>, niet <code>/document/pages/*</code>).</div>
+<div class="lesson">💡 <code>projectionMode: skipIndexingParentDocuments</code> = alleen chunks in de target index, parent docs overslaan.</div>
+</div>
+
+<div class="card">
+<div class="card-title">Semantic Configuration</div>
+<ul>
+  <li>Definieer op de index welke velden de semantic ranker moet gebruiken</li>
+  <li><strong>Content field:</strong> het tekstveld dat gerankt wordt (bijv. <code>chunk</code>)</li>
+  <li><strong>Title field:</strong> optioneel, weegt mee in relevantie (bijv. <code>title</code>)</li>
+  <li>Bij query: <code>queryType=semantic</code> + <code>semanticConfiguration=sc-default</code></li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Chunk Overlap</div>
+<ul>
+  <li>Split skill: <code>pageOverlapLength</code> (bijv. 200 chars op 2000 chars chunks = 10% overlap)</li>
+  <li>Voorkomt context verlies op chunk-grenzen — zinnen die net op de split vallen zitten in beide chunks</li>
+  <li>Minimale storage/embedding overhead, grote verbetering in retrieval kwaliteit</li>
+</ul>
+</div>
+
 </div>
 </details>
 
@@ -497,6 +562,29 @@
 </ul>
 </div>
 
+<div class="card">
+<div class="card-title">"On Your Data" (Azure OpenAI)</div>
+<ul>
+  <li>Ingebouwde RAG feature: koppel een AI Search index aan een Azure OpenAI deployment</li>
+  <li>Doet automatisch: query → search → inject resultaten als context → LLM antwoord met citations</li>
+  <li>Configureerbaar: search type (keyword/vector/hybrid), semantic ranker aan/uit</li>
+</ul>
+<h3>Authenticatie opties</h3>
+<table>
+  <tr><th>Methode</th><th>Hoe</th><th>Wanneer</th></tr>
+  <tr><td><strong>API Key</strong></td><td>Foundry haalt zelf de admin key op</td><td>Dev/test, snel opzetten</td></tr>
+  <tr><td><strong>System Managed Identity</strong></td><td>OpenAI resource auth't als zichzelf bij Search</td><td>Productie — geen secrets</td></tr>
+</table>
+<h3>RBAC vereisten voor Managed Identity</h3>
+<table>
+  <tr><th>Wie (identity van)</th><th>Op welke resource</th><th>Role</th></tr>
+  <tr><td>Azure OpenAI</td><td>AI Search</td><td><strong>Search Index Data Reader</strong></td></tr>
+  <tr><td>AI Search</td><td>Azure OpenAI</td><td><strong>Cognitive Services OpenAI User</strong></td></tr>
+</table>
+<div class="lesson">💡 AI Search moet <strong>API access control = "Both"</strong> of <strong>"RBAC"</strong> hebben — met "API key only" werkt managed identity auth niet (403).</div>
+<div class="lesson">💡 Meerdere portals (classic, Foundry, new Foundry) kunnen verschillende identities aanmaken. Check altijd de Object ID bij RBAC toekenning.</div>
+</div>
+
 </div>
 </details>
 
@@ -513,6 +601,10 @@
 <div class="lesson">💡 Standard deployments auto-upgraden naar nieuwere model versies</div>
 <div class="lesson">💡 Content filtering (HVSS) ≠ grounding — twee aparte concepten</div>
 <div class="lesson">💡 Groundedness check = hallucination detection (is het antwoord gebaseerd op de context?)</div>
+<div class="lesson">💡 Chunk-level index key field: moet <code>searchable=true</code> + <code>analyzer=keyword</code> — anders weigert Azure de index projection</div>
+<div class="lesson">💡 Index projection <code>sourceContext</code> moet exact matchen met de split skill output (check de targetName!)</div>
+<div class="lesson">💡 AI Search API access control: "API key only" blokkeert managed identity auth — zet op "Both" of "RBAC"</div>
+<div class="lesson">💡 Managed identity Object IDs kunnen verschillen tussen portals (classic vs Foundry) — altijd de juiste ID verifiëren</div>
 
 </div>
 </details>
@@ -526,6 +618,9 @@
 <dl class="glossary-grid">
   <dt>BM25</dt>
   <dd>Best Match 25 — standaard ranking algoritme voor full-text search (term frequency × inverse document frequency)</dd>
+
+  <dt>Chunk Overlap</dt>
+  <dd>Overlappende tekst tussen opeenvolgende chunks (bijv. 200 chars) — voorkomt context verlies op splitgrenzen</dd>
 
   <dt>Chunking</dt>
   <dd>Tekst opdelen in kleinere stukken zodat elke chunk apart geëmbedded en geretrievet kan worden</dd>
@@ -569,6 +664,9 @@
   <dt>Indexer</dt>
   <dd>AI Search component dat data uit een source haalt, door skillset duwt, en in de index stopt</dd>
 
+  <dt>Index Projection</dt>
+  <dd>Skillset feature dat chunks als aparte records in een (aparte) index projecteert — essentieel voor chunk-level RAG</dd>
+
   <dt>Inverted Index</dt>
   <dd>Datastructuur die woorden mapt naar documenten (zoals de index achteraan in een boek)</dd>
 
@@ -586,6 +684,9 @@
 
   <dt>OCR</dt>
   <dd>Optical Character Recognition — tekst herkennen uit afbeeldingen/gescande documenten</dd>
+
+  <dt>On Your Data</dt>
+  <dd>Azure OpenAI feature dat automatisch RAG doet: koppelt een Search index aan een GPT deployment voor gegronde antwoorden met citations</dd>
 
   <dt>PTU</dt>
   <dd>Provisioned Throughput Units — gereserveerde capaciteit voor Azure OpenAI (voorspelbare kosten)</dd>
@@ -640,6 +741,18 @@
 <table>
   <tr><th>Datum</th><th>Sessie</th><th>Wijzigingen</th></tr>
   <tr>
+    <td>9 mrt 2026</td>
+    <td>5 — Chunk-level index + E2E RAG</td>
+    <td>
+      <ul>
+        <li>Sectie 6: chunk-level index, index projections, semantic configuration, chunk overlap</li>
+        <li>Sectie 7: "On Your Data" feature, auth opties (API key vs managed identity), RBAC vereisten</li>
+        <li>Sectie 8: 4 nieuwe lessen (chunk key analyzer, sourceContext matching, API access control, identity mismatch)</li>
+        <li>3 nieuwe termen: Chunk Overlap, Index Projection, On Your Data</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
     <td>8 mrt 2026</td>
     <td>4 — AI Search deep dive</td>
     <td>
@@ -664,7 +777,7 @@
 </div>
 </details>
 
-<p class="updated">Laatste update: 8 maart 2026 · Sessie 4: Azure AI Search deep dive</p>
+<p class="updated">Laatste update: 9 maart 2026 · Sessie 5: Chunk-level index + End-to-end RAG</p>
 
 <script>
 // Open section when clicking TOC link
