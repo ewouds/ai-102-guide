@@ -243,10 +243,13 @@
   <li><a href="#azure-openai">5. Azure OpenAI Service</a></li>
   <li><a href="#function-calling">6. Function Calling</a></li>
   <li><a href="#assistants-api">7. Assistants API</a></li>
-  <li><a href="#ai-search">8. Azure AI Search</a></li>
-  <li><a href="#rag">9. RAG Pattern</a></li>
-  <li><a href="#lessons">10. Geleerde Lessen</a></li>
-  <li><a href="#glossary">11. Begrippenlijst</a></li>
+  <li><a href="#foundry">8. Microsoft Foundry</a></li>
+  <li><a href="#content-safety">9. Content Safety</a></li>
+  <li><a href="#agentic">10. Agentic Solutions</a></li>
+  <li><a href="#ai-search">11. Azure AI Search</a></li>
+  <li><a href="#rag">12. RAG Pattern</a></li>
+  <li><a href="#lessons">13. Geleerde Lessen</a></li>
+  <li><a href="#glossary">14. Begrippenlijst</a></li>
   <li><a href="#changelog">📋 Changelog</a></li>
 </ul>
 </nav>
@@ -516,9 +519,179 @@
 </div>
 </details>
 
-<!-- ===== 8. AI SEARCH ===== -->
+<!-- ===== 8. MICROSOFT FOUNDRY ===== -->
+<details id="foundry">
+<summary>8. Microsoft Foundry</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">Naming Timeline</div>
+<pre class="pipeline"><span class="node">Azure AI Studio</span> → <span class="node">Azure AI Foundry</span> → <span class="highlight">Microsoft Foundry</span>
+Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieuwe namen</pre>
+</div>
+
+<div class="card">
+<div class="card-title">Structuur: Hub & Project</div>
+<table>
+  <tr><th>Concept</th><th>Wat</th><th>Bevat</th></tr>
+  <tr><td><strong>Hub</strong></td><td>Gedeelde container</td><td>Connections (OpenAI, Search, Storage), compute, policies</td></tr>
+  <tr><td><strong>Project</strong></td><td>Werkruimte binnen een Hub</td><td>Deployments, Prompt Flows, Evaluations, Agents</td></tr>
+</table>
+<p>Azure resource types: Hub = <code>Microsoft.MachineLearningServices/workspaces</code> (kind: Hub), Project = idem (kind: Project)</p>
+</div>
+
+<div class="card">
+<div class="card-title">Model Catalog — Deployment Opties</div>
+<table>
+  <tr><th>Type</th><th>Infra</th><th>Kosten</th><th>Wanneer</th></tr>
+  <tr><td><strong>Azure OpenAI</strong></td><td>Microsoft-managed</td><td>Per token</td><td>GPT, DALL-E, Whisper</td></tr>
+  <tr><td><strong>Serverless API (MaaS)</strong></td><td>Microsoft-managed</td><td>Per token</td><td>Llama, Mistral — geen infra beheer</td></tr>
+  <tr><td><strong>Managed Compute</strong></td><td>Dedicated VM</td><td>Per uur</td><td>Volledige controle, fine-tuning, custom modellen</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Prompt Flow (Workflows in new UI)</div>
+<ul>
+  <li>DAG (Directed Acyclic Graph) van nodes: LLM calls, Python, tools</li>
+  <li><strong>Variants:</strong> A/B test verschillende prompts</li>
+  <li><strong>Evaluation runs:</strong> meet kwaliteit (groundedness, relevance, coherence)</li>
+  <li>Deployable als endpoint</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Evaluations</div>
+<ul>
+  <li>Ingebouwde metrics: <strong>groundedness</strong>, <strong>relevance</strong>, <strong>coherence</strong>, <strong>fluency</strong>, <strong>similarity</strong></li>
+  <li>Custom evaluators mogelijk</li>
+  <li>Vergelijk modellen/prompts side-by-side</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Classic vs New Portal</div>
+<ul>
+  <li><strong>New Foundry:</strong> alleen Foundry projects zichtbaar</li>
+  <li><strong>Classic:</strong> nodig voor andere resource types (Azure OpenAI resources, hub-based projects)</li>
+  <li>Toggle rechtsboven in ai.azure.com</li>
+  <li><strong>Examen focust op concepten + API, niet op portal klikpaden</strong></li>
+</ul>
+</div>
+
+</div>
+</details>
+
+<!-- ===== 9. CONTENT SAFETY ===== -->
+<details id="content-safety">
+<summary>9. Content Safety</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">Content Filters (ingebouwd in Azure OpenAI)</div>
+<table>
+  <tr><th>Categorie</th><th>Severity Levels</th></tr>
+  <tr><td><strong>Hate</strong></td><td>safe, low, medium, high</td></tr>
+  <tr><td><strong>Violence</strong></td><td>safe, low, medium, high</td></tr>
+  <tr><td><strong>Sexual</strong></td><td>safe, low, medium, high</td></tr>
+  <tr><td><strong>Self-harm</strong></td><td>safe, low, medium, high</td></tr>
+</table>
+<ul>
+  <li>Acroniem: <span class="tag tag-red">HVSS</span></li>
+  <li>Default: medium en hoger geblokkeerd</li>
+  <li>Configureerbaar per deployment</li>
+  <li>Werken op <strong>zowel input als output</strong></li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Blocklists</div>
+<ul>
+  <li>Custom lijsten van exacte woorden/zinnen</li>
+  <li><strong>Altijd geblokkeerd</strong>, ongeacht severity score</li>
+  <li>Use case: concurrentnamen, domein-specifieke termen</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Prompt Shields</div>
+<ul>
+  <li>Detecteert <strong>jailbreak</strong> pogingen (user omzeilt system prompt)</li>
+  <li>Detecteert <strong>indirect prompt injection</strong> (schadelijke instructies in documenten/data)</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Groundedness Detection</div>
+<ul>
+  <li>Checkt of output <strong>gebaseerd is op meegegeven context</strong></li>
+  <li>≠ Content filtering (schadelijkheid) — dit is <strong>hallucination check</strong></li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Content Safety Resource</div>
+<ul>
+  <li><strong>Azure AI Content Safety</strong> = apart resource (<code>Microsoft.CognitiveServices/accounts</code>, kind: ContentSafety)</li>
+  <li>Content filters in Azure OpenAI zijn <strong>ingebouwd</strong> — geen apart resource nodig</li>
+  <li>Standalone Content Safety resource: voor custom tekst/beeld analyse buiten OpenAI</li>
+</ul>
+</div>
+
+</div>
+</details>
+
+<!-- ===== 10. AGENTIC SOLUTIONS ===== -->
+<details id="agentic">
+<summary>10. Agentic Solutions</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">Agent vs Chatbot</div>
+<table>
+  <tr><th>Aspect</th><th>Chatbot</th><th>Agent</th></tr>
+  <tr><td>Gedrag</td><td>Reactief: 1 vraag → 1 antwoord</td><td><strong>Autonoom:</strong> plant stappen, meerdere rondes</td></tr>
+  <tr><td>Tools</td><td>Geen of beperkt</td><td>Function calling, code, search, API's</td></tr>
+  <tr><td>Planning</td><td>Geen</td><td>Kan taken opdelen en sequentieel uitvoeren</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Foundry Agent Service</div>
+<ul>
+  <li>Bouwt voort op <strong>Assistants API</strong> (threads, runs)</li>
+  <li>Extra tools bovenop Assistants: <strong>Bing grounding</strong>, <strong>Azure AI Search</strong>, <strong>Azure Functions</strong>, <strong>OpenAPI specs</strong></li>
+  <li>Managed: geen infra beheer</li>
+  <li>Foundry-native manier om agents te bouwen</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Multi-Agent Patterns</div>
+<table>
+  <tr><th>Pattern</th><th>Hoe</th><th>Voorbeeld</th></tr>
+  <tr><td><strong>Sequential</strong></td><td>Agent A → output → Agent B → output → Agent C</td><td>Research → Schrijven → Review</td></tr>
+  <tr><td><strong>Parallel</strong></td><td>Meerdere agents tegelijk, resultaten combineren</td><td>Zoek in 3 bronnen tegelijk</td></tr>
+  <tr><td><strong>Orchestrator</strong></td><td>Manager-agent delegeert taken</td><td>Planner stuurt specialisten aan</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Exam Tips</div>
+<ul>
+  <li><strong>Assistants API</strong> = low-level (threads, runs, tool calls)</li>
+  <li><strong>Agent Service</strong> = high-level (extra tools, managed)</li>
+  <li><strong>Microsoft Agent Framework</strong> = SDK voor complexe multi-agent scenarios</li>
+  <li>Fine-tuning is <strong>geen</strong> agent capability</li>
+</ul>
+</div>
+
+</div>
+</details>
+
+<!-- ===== 11. AI SEARCH ===== -->
 <details id="ai-search">
-<summary>8. Azure AI Search</summary>
+<summary>11. Azure AI Search</summary>
 <div class="section-content">
 
 <div class="card">
@@ -677,7 +850,7 @@
 
 <!-- ===== 7. RAG ===== -->
 <details id="rag">
-<summary>9. RAG Pattern</summary>
+<summary>12. RAG Pattern</summary>
 <div class="section-content">
 
 <div class="card">
@@ -721,7 +894,7 @@
 
 <!-- ===== 8. LESSONS ===== -->
 <details id="lessons">
-<summary>10. Geleerde Lessen</summary>
+<summary>13. Geleerde Lessen</summary>
 <div class="section-content">
 
 <div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
@@ -742,19 +915,36 @@
 <div class="lesson">💡 Assistants API: threads hebben geen token limiet — de service truncate automatisch, jij hoeft niks te doen</div>
 <div class="lesson">💡 Chat Completions = stateless (jij beheert history), Assistants API = stateful (service beheert threads)</div>
 <div class="lesson">💡 Org policy kan API keys blokkeren — gebruik dan Bearer token via az account get-access-token + Entra RBAC</div>
+<div class="lesson">💡 Microsoft Foundry = hernoemd van Azure AI Foundry = hernoemd van Azure AI Studio — zelfde product, zelfde URL</div>
+<div class="lesson">💡 Foundry maakt stiekem resources aan (Storage, Key Vault) wanneer je een Hub/Project maakt</div>
+<div class="lesson">💡 New Foundry portal toont alleen Foundry projects — voor andere resource types heb je classic nodig</div>
+<div class="lesson">💡 Content Safety filters ≠ Groundedness detection: filters blokkeren schadelijke content, groundedness checkt hallucinaties</div>
+<div class="lesson">💡 Content filters in Azure OpenAI zijn ingebouwd — geen apart Content Safety resource nodig</div>
+<div class="lesson">💡 Blocklists blokkeren altijd, ongeacht severity score — voor exacte woorden/zinnen</div>
+<div class="lesson">💡 Agent Service bouwt voort op Assistants API maar voegt Bing, AI Search, Functions en OpenAPI als extra tools toe</div>
+<div class="lesson">💡 Fine-tuning is geen agent capability — agents gebruiken tools, geen model training</div>
 
 </div>
 </details>
 
 <!-- ===== 9. GLOSSARY ===== -->
 <details id="glossary" open>
-<summary>11. Begrippenlijst</summary>
+<summary>14. Begrippenlijst</summary>
 <div class="section-content">
 
 <div class="card">
 <dl class="glossary-grid">
+  <dt>Agent</dt>
+  <dd>AI systeem dat autonoom beslissingen neemt, tools gebruikt en multi-step taken uitvoert — meer dan een reactieve chatbot</dd>
+
+  <dt>Agent Service</dt>
+  <dd>Microsoft Foundry managed service voor agents — bouwt voort op Assistants API met extra tools (Bing, Search, Functions, OpenAPI)</dd>
+
   <dt>Assistant (API)</dt>
   <dd>Configuratie-object in de Assistants API — bevat model, instructions en tools. Herbruikbaar over meerdere threads.</dd>
+
+  <dt>Blocklist</dt>
+  <dd>Custom lijst van exacte woorden/zinnen die altijd geblokkeerd worden in Content Safety, ongeacht severity score</dd>
 
   <dt>BM25</dt>
   <dd>Best Match 25 — standaard ranking algoritme voor full-text search (term frequency × inverse document frequency)</dd>
@@ -804,6 +994,9 @@
   <dt>HNSW</dt>
   <dd>Hierarchical Navigable Small World — algoritme voor snelle approximate nearest neighbor search in vector spaces</dd>
 
+  <dt>Hub</dt>
+  <dd>Microsoft Foundry container voor gedeelde resources (connections, compute, policies) — bevat Projects als werkruimtes</dd>
+
   <dt>HVSS</dt>
   <dd>Hate, Violence, Sexual, Self-harm — de 4 content filtering categorieën in Azure OpenAI</dd>
 
@@ -825,6 +1018,9 @@
   <dt>L2 Re-ranker</dt>
   <dd>Tweede-fase ranking model dat initiële zoekresultaten herordent op semantische relevantie</dd>
 
+  <dt>MaaS</dt>
+  <dd>Models as a Service — serverless deployment in Foundry Model Catalog, pay-per-token, geen infra beheer (voor Llama, Mistral, etc.)</dd>
+
   <dt>Managed Identity</dt>
   <dd>Azure-beheerde identiteit voor resources — geen credentials nodig, automatische rotatie</dd>
 
@@ -836,6 +1032,12 @@
 
   <dt>On Your Data</dt>
   <dd>Azure OpenAI feature dat automatisch RAG doet: koppelt een Search index aan een GPT deployment voor gegronde antwoorden met citations</dd>
+
+  <dt>Project</dt>
+  <dd>Microsoft Foundry werkruimte binnen een Hub — bevat deployments, prompt flows, evaluations en agents</dd>
+
+  <dt>Prompt Shields</dt>
+  <dd>Content Safety feature dat jailbreak-pogingen en indirect prompt injection detecteert</dd>
 
   <dt>PTU</dt>
   <dd>Provisioned Throughput Units — gereserveerde capaciteit voor Azure OpenAI (voorspelbare kosten)</dd>
@@ -903,13 +1105,16 @@
   <tr><th>Datum</th><th>Sessie</th><th>Wijzigingen</th></tr>
   <tr>
     <td>11 mrt 2026</td>
-    <td>7 — Function Calling + Assistants API + On Your Data REST</td>
+    <td>7 — Function Calling + Assistants API + Foundry + Content Safety + Agentic</td>
     <td>
       <ul>
         <li>Sectie 6 (Function Calling) toegevoegd: 3-stappen flow, tool definitie, parallel calls, tool_choice</li>
         <li>Sectie 7 (Assistants API) toegevoegd: kernconcepten, flow, vergelijking met Chat Completions, ingebouwde tools</li>
-        <li>Secties hernummerd (8-11)</li>
-        <li>7 nieuwe lessen + 8 nieuwe begrippenlijst termen</li>
+        <li>Sectie 8 (Microsoft Foundry) toegevoegd: naming timeline, Hub/Project, Model Catalog, deployment opties, Prompt Flow, Evaluations</li>
+        <li>Sectie 9 (Content Safety) toegevoegd: HVSS filters, blocklists, prompt shields, groundedness detection</li>
+        <li>Sectie 10 (Agentic Solutions) toegevoegd: agent vs chatbot, Agent Service, multi-agent patterns</li>
+        <li>Secties hernummerd (11-14)</li>
+        <li>9 nieuwe lessen, 10 nieuwe begrippenlijst termen</li>
       </ul>
     </td>
   </tr>
@@ -950,7 +1155,7 @@
 </div>
 </details>
 
-<p class="updated">Laatste update: 11 maart 2026 · Sessie 7: Function Calling + Assistants API + On Your Data via REST</p>
+<p class="updated">Laatste update: 11 maart 2026 · Sessie 7: Function Calling + Assistants API + Foundry + Content Safety + Agentic</p>
 
 <script>
 // Open section when clicking TOC link
