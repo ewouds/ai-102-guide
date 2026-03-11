@@ -241,10 +241,12 @@
   <li><a href="#responsible-ai">3. Responsible AI</a></li>
   <li><a href="#azure-ai-services">4. Azure AI Services</a></li>
   <li><a href="#azure-openai">5. Azure OpenAI Service</a></li>
-  <li><a href="#ai-search">6. Azure AI Search</a></li>
-  <li><a href="#rag">7. RAG Pattern</a></li>
-  <li><a href="#lessons">8. Geleerde Lessen</a></li>
-  <li><a href="#glossary">9. Begrippenlijst</a></li>
+  <li><a href="#function-calling">6. Function Calling</a></li>
+  <li><a href="#assistants-api">7. Assistants API</a></li>
+  <li><a href="#ai-search">8. Azure AI Search</a></li>
+  <li><a href="#rag">9. RAG Pattern</a></li>
+  <li><a href="#lessons">10. Geleerde Lessen</a></li>
+  <li><a href="#glossary">11. Begrippenlijst</a></li>
   <li><a href="#changelog">📋 Changelog</a></li>
 </ul>
 </nav>
@@ -385,9 +387,138 @@
 </div>
 </details>
 
-<!-- ===== 6. AI SEARCH ===== -->
+<!-- ===== 6. FUNCTION CALLING ===== -->
+<details id="function-calling">
+<summary>6. Function Calling</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">3-Stappen Flow</div>
+<pre class="pipeline">1. <span class="node">Define</span>  — Jij definieert tools (functions) in de request
+2. <span class="node">Decide</span>  — Model beslist of het een tool wil aanroepen → <span class="highlight">finish_reason: "tool_calls"</span>
+3. <span class="node">Execute</span> — Jij voert de functie uit en stuurt resultaat terug als <code>tool</code> message</pre>
+<p><strong>Belangrijk:</strong> het model voert NOOIT zelf functies uit — het vraagt jouw applicatie om dat te doen.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Tool Definitie</div>
+<pre><code>{
+  "tools": [{
+    "type": "function",
+    "function": {
+      "name": "get_weather",
+      "description": "Haal het huidige weer op voor een locatie",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "location": { "type": "string", "description": "De stad" }
+        },
+        "required": ["location"]
+      }
+    }
+  }]
+}</code></pre>
+</div>
+
+<div class="card">
+<div class="card-title">Tool Result Terugsturen</div>
+<p>Na een <code>tool_calls</code> response stuur je de hele conversatie terug inclusief:</p>
+<ul>
+  <li>Het <strong>assistant</strong> bericht met de originele <code>tool_calls</code></li>
+  <li>Een <strong>tool</strong> message per call, gekoppeld via <code>tool_call_id</code></li>
+</ul>
+<pre><code>{ "role": "tool", "tool_call_id": "call_abc123", "content": "{\"temperature\": 12}" }</code></pre>
+</div>
+
+<div class="card">
+<div class="card-title">Parallel Tool Calls</div>
+<ul>
+  <li>Model kan <strong>meerdere tool calls</strong> in één response doen (bijv. weer in 2 steden)</li>
+  <li>Elke call heeft een eigen <code>id</code> — stuur voor elke call een apart <code>tool</code> message terug</li>
+  <li>Werkt ook met <strong>verschillende tools</strong> (bijv. <code>get_weather</code> + <code>get_news</code> tegelijk)</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">tool_choice Parameter</div>
+<table>
+  <tr><th>Waarde</th><th>Gedrag</th></tr>
+  <tr><td><code>"auto"</code></td><td>Model beslist zelf (default)</td></tr>
+  <tr><td><code>"none"</code></td><td>Mag geen tools gebruiken — valt terug op eigen kennis</td></tr>
+  <tr><td><code>"required"</code></td><td>Moet minstens één tool aanroepen</td></tr>
+  <tr><td><code>{"type":"function","function":{"name":"..."}}</code></td><td>Forceer een specifieke tool</td></tr>
+</table>
+</div>
+
+</div>
+</details>
+
+<!-- ===== 7. ASSISTANTS API ===== -->
+<details id="assistants-api">
+<summary>7. Assistants API</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">Kernconcepten</div>
+<table>
+  <tr><th>Concept</th><th>Wat</th><th>Analogie</th></tr>
+  <tr><td><strong>Assistant</strong></td><td>Configuratie: model, instructions, tools</td><td>Het profiel van je bot</td></tr>
+  <tr><td><strong>Thread</strong></td><td>Persistente conversatie met messages</td><td>Een chatvenster</td></tr>
+  <tr><td><strong>Message</strong></td><td>User of assistant bericht in een thread</td><td>Een chatbericht</td></tr>
+  <tr><td><strong>Run</strong></td><td>Uitvoering van de assistant op een thread</td><td>"Verwerk dit gesprek"</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Flow</div>
+<pre class="pipeline">1. <span class="node">Create Assistant</span>  (eenmalig — model + instructions + tools)
+2. <span class="node">Create Thread</span>     (per gesprek)
+3. <span class="node">Add Message</span>       (user message toevoegen)
+4. <span class="node">Create Run</span>        (assistant verwerkt de thread)
+5. <span class="node">Poll Run Status</span>   (async! queued → in_progress → ...)
+6. ├── <span class="highlight">completed</span>        → haal assistant message op
+   └── <span class="highlight">requires_action</span> → submit tool outputs → poll weer</pre>
+</div>
+
+<div class="card">
+<div class="card-title">Chat Completions vs Assistants API</div>
+<table>
+  <tr><th>Aspect</th><th>Chat Completions</th><th>Assistants API</th></tr>
+  <tr><td>State</td><td>Stateless — jij stuurt elke keer alles mee</td><td>Stateful — service beheert threads</td></tr>
+  <tr><td>History</td><td>Volledige message array per request</td><td>Voeg alleen nieuwe message toe</td></tr>
+  <tr><td>Tools</td><td>Function calling</td><td>Function calling + Code Interpreter + File Search</td></tr>
+  <tr><td>Execution</td><td>Synchroon</td><td>Asynchroon (poll of stream)</td></tr>
+  <tr><td>Context overflow</td><td>Jij moet truncaten</td><td>Automatische truncation</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Ingebouwde Tools</div>
+<table>
+  <tr><th>Tool</th><th>Wat het doet</th></tr>
+  <tr><td><strong>Code Interpreter</strong></td><td>Draait Python in een sandbox — kan berekeningen doen, files lezen/schrijven, grafieken maken</td></tr>
+  <tr><td><strong>File Search</strong></td><td>Doorzoekt geüploade documenten via een Vector Store (automatisch chunking + embeddings)</td></tr>
+  <tr><td><strong>Function Calling</strong></td><td>Zelfde als Chat Completions, maar geïntegreerd in de Run flow via <code>submit_tool_outputs</code></td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Belangrijke Details</div>
+<ul>
+  <li>Threads hebben <strong>geen token limiet</strong> — de API truncate automatisch</li>
+  <li>Runs zijn <strong>async</strong> — poll de status of gebruik streaming</li>
+  <li>Code Interpreter output kan <strong>files</strong> bevatten (grafieken als PNG, CSV, etc.)</li>
+  <li>Assistants worden opgeslagen per resource — kosten niks tot je een Run start</li>
+  <li>File Search gebruikt een <strong>Vector Store</strong> — apart object, koppelbaar aan assistant of thread</li>
+</ul>
+</div>
+
+</div>
+</details>
+
+<!-- ===== 8. AI SEARCH ===== -->
 <details id="ai-search">
-<summary>6. Azure AI Search</summary>
+<summary>8. Azure AI Search</summary>
 <div class="section-content">
 
 <div class="card">
@@ -546,7 +677,7 @@
 
 <!-- ===== 7. RAG ===== -->
 <details id="rag">
-<summary>7. RAG Pattern</summary>
+<summary>9. RAG Pattern</summary>
 <div class="section-content">
 
 <div class="card">
@@ -590,7 +721,7 @@
 
 <!-- ===== 8. LESSONS ===== -->
 <details id="lessons">
-<summary>8. Geleerde Lessen</summary>
+<summary>10. Geleerde Lessen</summary>
 <div class="section-content">
 
 <div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
@@ -605,17 +736,26 @@
 <div class="lesson">💡 Index projection <code>sourceContext</code> moet exact matchen met de split skill output (check de targetName!)</div>
 <div class="lesson">💡 AI Search API access control: "API key only" blokkeert managed identity auth — zet op "Both" of "RBAC"</div>
 <div class="lesson">💡 Managed identity Object IDs kunnen verschillen tussen portals (classic vs Foundry) — altijd de juiste ID verifiëren</div>
+<div class="lesson">💡 Function calling: het model voert NOOIT zelf functies uit — het genereert alleen de aanroep, jouw app voert uit</div>
+<div class="lesson">💡 tool_choice: "none" = model weet dat tools bestaan maar mag ze niet gebruiken — valt terug op eigen kennis (of bluf)</div>
+<div class="lesson">💡 Parallel tool calls: elke call heeft een eigen tool_call_id — stuur voor ELKE call een apart tool message terug</div>
+<div class="lesson">💡 Assistants API: threads hebben geen token limiet — de service truncate automatisch, jij hoeft niks te doen</div>
+<div class="lesson">💡 Chat Completions = stateless (jij beheert history), Assistants API = stateful (service beheert threads)</div>
+<div class="lesson">💡 Org policy kan API keys blokkeren — gebruik dan Bearer token via az account get-access-token + Entra RBAC</div>
 
 </div>
 </details>
 
 <!-- ===== 9. GLOSSARY ===== -->
 <details id="glossary" open>
-<summary>9. Begrippenlijst</summary>
+<summary>11. Begrippenlijst</summary>
 <div class="section-content">
 
 <div class="card">
 <dl class="glossary-grid">
+  <dt>Assistant (API)</dt>
+  <dd>Configuratie-object in de Assistants API — bevat model, instructions en tools. Herbruikbaar over meerdere threads.</dd>
+
   <dt>BM25</dt>
   <dd>Best Match 25 — standaard ranking algoritme voor full-text search (term frequency × inverse document frequency)</dd>
 
@@ -627,6 +767,9 @@
 
   <dt>CoT</dt>
   <dd>Chain-of-Thought — prompt techniek waarbij het model stapsgewijs redeneert voor betere antwoorden</dd>
+
+  <dt>Code Interpreter</dt>
+  <dd>Ingebouwde Assistants API tool die Python draait in een sandbox — kan berekeningen, files en grafieken maken</dd>
 
   <dt>Content Filtering</dt>
   <dd>Azure OpenAI feature dat schadelijke content blokkeert in 4 categorieën (HVSS)</dd>
@@ -642,6 +785,12 @@
 
   <dt>Few-shot</dt>
   <dd>Prompt techniek met voorbeelden van gewenste input→output in de prompt</dd>
+
+  <dt>File Search</dt>
+  <dd>Ingebouwde Assistants API tool die geüploade documenten doorzoekt via een Vector Store (automatisch chunking + embeddings)</dd>
+
+  <dt>Function Calling</dt>
+  <dd>Mechanisme waarbij het model tools/functies kan aanroepen — het model beslist en vraagt, jouw app voert uit</dd>
 
   <dt>Grounding</dt>
   <dd>Model beperken tot alleen antwoorden op basis van gegeven context (voorkomt hallucinaties)</dd>
@@ -694,6 +843,9 @@
   <dt>RAG</dt>
   <dd>Retrieval-Augmented Generation — relevante documenten ophalen en meegeven als context aan een LLM</dd>
 
+  <dt>Run</dt>
+  <dd>Assistants API: uitvoering van een assistant op een thread — asynchroon, met statussen (queued → in_progress → completed/requires_action)</dd>
+
   <dt>RRF</dt>
   <dd>Reciprocal Rank Fusion — methode om ranked lists uit verschillende search types te combineren</dd>
 
@@ -712,11 +864,20 @@
   <dt>TF-IDF</dt>
   <dd>Term Frequency × Inverse Document Frequency — hoe belangrijk is een woord voor een document</dd>
 
+  <dt>Thread</dt>
+  <dd>Assistants API: persistente conversatie die messages bevat — service beheert de history, geen token limiet</dd>
+
   <dt>Token</dt>
   <dd>Kleinste teksteenheid voor LLM's (~4 karakters EN), bepaalt kosten en context limiet</dd>
 
   <dt>TPM</dt>
   <dd>Tokens Per Minute — quota-eenheid voor Azure OpenAI, gedeeld per model per regio</dd>
+
+  <dt>tool_call_id</dt>
+  <dd>Unieke ID die een tool result koppelt aan de oorspronkelijke tool call — essentieel bij parallel calls</dd>
+
+  <dt>tool_choice</dt>
+  <dd>Parameter die bepaalt of/hoe het model tools mag gebruiken: auto (default), none, required, of specifieke functie</dd>
 
   <dt>Transformer</dt>
   <dd>Neural network architectuur achter moderne LLM's — attention mechanisme voor parallelle verwerking</dd>
@@ -740,6 +901,18 @@
 <div class="card">
 <table>
   <tr><th>Datum</th><th>Sessie</th><th>Wijzigingen</th></tr>
+  <tr>
+    <td>11 mrt 2026</td>
+    <td>7 — Function Calling + Assistants API + On Your Data REST</td>
+    <td>
+      <ul>
+        <li>Sectie 6 (Function Calling) toegevoegd: 3-stappen flow, tool definitie, parallel calls, tool_choice</li>
+        <li>Sectie 7 (Assistants API) toegevoegd: kernconcepten, flow, vergelijking met Chat Completions, ingebouwde tools</li>
+        <li>Secties hernummerd (8-11)</li>
+        <li>7 nieuwe lessen + 8 nieuwe begrippenlijst termen</li>
+      </ul>
+    </td>
+  </tr>
   <tr>
     <td>9 mrt 2026</td>
     <td>5 — Chunk-level index + E2E RAG</td>
@@ -777,7 +950,7 @@
 </div>
 </details>
 
-<p class="updated">Laatste update: 9 maart 2026 · Sessie 5: Chunk-level index + End-to-end RAG</p>
+<p class="updated">Laatste update: 11 maart 2026 · Sessie 7: Function Calling + Assistants API + On Your Data via REST</p>
 
 <script>
 // Open section when clicking TOC link
