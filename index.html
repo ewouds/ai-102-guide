@@ -224,7 +224,13 @@
     margin-bottom: 0.5rem;
     border-bottom: 1px solid var(--border);
   }
-  .search-bar input {
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .search-wrapper { position: relative; flex: 1; }
+  .search-bar input[type="text"] {
     width: 100%;
     padding: 0.6rem 1rem 0.6rem 2.5rem;
     background: var(--surface);
@@ -235,8 +241,8 @@
     outline: none;
     transition: border-color 0.2s;
   }
-  .search-bar input:focus { border-color: var(--accent); }
-  .search-bar input::placeholder { color: var(--muted); }
+  .search-bar input[type="text"]:focus { border-color: var(--accent); }
+  .search-bar input[type="text"]::placeholder { color: var(--muted); }
   .search-icon {
     position: absolute;
     left: 0.8rem;
@@ -246,18 +252,23 @@
     font-size: 1rem;
     pointer-events: none;
   }
-  .search-wrapper { position: relative; }
-  .search-options {
+  .search-toggle {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-top: 0.4rem;
+    gap: 0.3rem;
     font-size: 0.82rem;
     color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
-  .search-options label { cursor: pointer; display: flex; align-items: center; gap: 0.3rem; }
-  .search-options input[type="checkbox"] { accent-color: var(--accent); }
-  .search-stats { margin-left: auto; }
+  .search-toggle input[type="checkbox"] { accent-color: var(--accent); }
+  .search-stats {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+    min-height: 1.2em;
+  }
   mark {
     background: rgba(56, 189, 248, 0.25);
     color: var(--accent);
@@ -286,14 +297,14 @@
 <span class="tag tag-blue">Fase 1</span> AI-102 Certificering · mrt–apr 2026</p>
 
 <div class="search-bar">
-  <div class="search-wrapper">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Zoek in de guide... (fuzzy search)" autocomplete="off">
+  <div class="search-row">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Zoek in de guide... (fuzzy search)" autocomplete="off">
+    </div>
+    <label class="search-toggle"><input type="checkbox" id="hideNonMatches"> Toon alleen matches</label>
   </div>
-  <div class="search-options">
-    <label><input type="checkbox" id="hideNonMatches"> Toon alleen matches</label>
-    <span class="search-stats" id="searchStats"></span>
-  </div>
+  <div class="search-stats" id="searchStats"></div>
 </div>
 
 <div class="controls">
@@ -1391,7 +1402,6 @@ document.querySelectorAll('.toc a').forEach(a => {
     const summary = section.querySelector('summary')?.textContent || '';
     const cards = section.querySelectorAll('.card');
     if (cards.length === 0) {
-      // Section without cards (e.g. changelog)
       entries.push({
         sectionIdx: si,
         title: summary,
@@ -1465,6 +1475,22 @@ document.querySelectorAll('.toc a').forEach(a => {
     });
   }
 
+  // Extract actual matched substrings from Fuse.js results
+  function extractMatchedTerms(results) {
+    const terms = new Set();
+    results.forEach(r => {
+      if (!r.matches) return;
+      r.matches.forEach(m => {
+        if (!m.indices) return;
+        m.indices.forEach(([start, end]) => {
+          const word = m.value.slice(start, end + 1);
+          if (word.length >= 2) terms.add(word);
+        });
+      });
+    });
+    return Array.from(terms);
+  }
+
   function doSearch() {
     const query = input.value.trim();
     clearHighlights();
@@ -1480,8 +1506,8 @@ document.querySelectorAll('.toc a').forEach(a => {
     const results = fuse.search(query);
     const matchedSections = new Set(results.map(r => r.item.sectionIdx));
     
-    // Collect search terms for highlighting
-    const terms = query.split(/\s+/).filter(t => t.length >= 2);
+    // Use actual matched substrings from Fuse for highlighting
+    const terms = extractMatchedTerms(results);
     
     const hideMode = hideCheck.checked;
     sections.forEach((s, i) => {
@@ -1495,7 +1521,7 @@ document.querySelectorAll('.toc a').forEach(a => {
       }
     });
     
-    stats.textContent = matchedSections.size + '/' + sections.length + ' secties';
+    stats.textContent = matchedSections.size + '/' + sections.length + ' secties · ' + terms.slice(0, 5).join(', ');
   }
 
   input.addEventListener('input', () => {
@@ -1507,17 +1533,19 @@ document.querySelectorAll('.toc a').forEach(a => {
   
   // Ctrl+K / Cmd+K shortcut
   document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
+      e.stopPropagation();
       input.focus();
       input.select();
+      return false;
     }
     if (e.key === 'Escape' && document.activeElement === input) {
       input.value = '';
       doSearch();
       input.blur();
     }
-  });
+  }, true);
 })();
 </script>
 
