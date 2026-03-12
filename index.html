@@ -214,6 +214,63 @@
     padding-top: 0.5rem;
   }
 
+  /* Search */
+  .search-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding: 0.75rem 0;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-bar input {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+  .search-icon {
+    position: absolute;
+    left: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 1rem;
+    pointer-events: none;
+  }
+  .search-wrapper { position: relative; }
+  .search-options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .search-options label { cursor: pointer; display: flex; align-items: center; gap: 0.3rem; }
+  .search-options input[type="checkbox"] { accent-color: var(--accent); }
+  .search-stats { margin-left: auto; }
+  mark {
+    background: rgba(56, 189, 248, 0.25);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+  details.search-dimmed {
+    opacity: 0.25;
+    transition: opacity 0.2s;
+  }
+  details.search-dimmed:hover { opacity: 0.6; }
+  details.search-hidden { display: none; }
+
   @media (max-width: 640px) {
     body { padding: 1rem; }
     .glossary-grid { grid-template-columns: 1fr; }
@@ -227,6 +284,17 @@
 <h1>🎓 AI-102 Reference Guide</h1>
 <p class="subtitle">Ewoud's persoonlijke studiegids — alles wat we geleerd hebben, op één plek.<br>
 <span class="tag tag-blue">Fase 1</span> AI-102 Certificering · mrt–apr 2026</p>
+
+<div class="search-bar">
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Zoek in de guide... (fuzzy search)" autocomplete="off">
+  </div>
+  <div class="search-options">
+    <label><input type="checkbox" id="hideNonMatches"> Toon alleen matches</label>
+    <span class="search-stats" id="searchStats"></span>
+  </div>
+</div>
 
 <div class="controls">
   <button onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">📖 Alles openen</button>
@@ -244,12 +312,13 @@
   <li><a href="#function-calling">6. Function Calling</a></li>
   <li><a href="#assistants-api">7. Assistants API</a></li>
   <li><a href="#foundry">8. Microsoft Foundry</a></li>
-  <li><a href="#content-safety">9. Content Safety</a></li>
-  <li><a href="#agentic">10. Agentic Solutions</a></li>
-  <li><a href="#ai-search">11. Azure AI Search</a></li>
-  <li><a href="#rag">12. RAG Pattern</a></li>
-  <li><a href="#lessons">13. Geleerde Lessen</a></li>
-  <li><a href="#glossary">14. Begrippenlijst</a></li>
+  <li><a href="#prompt-flow">9. Prompt Flow & Evaluations</a></li>
+  <li><a href="#content-safety">10. Content Safety</a></li>
+  <li><a href="#agentic">11. Agentic Solutions</a></li>
+  <li><a href="#ai-search">12. Azure AI Search</a></li>
+  <li><a href="#rag">13. RAG Pattern</a></li>
+  <li><a href="#lessons">14. Geleerde Lessen</a></li>
+  <li><a href="#glossary">15. Begrippenlijst</a></li>
   <li><a href="#changelog">📋 Changelog</a></li>
 </ul>
 </nav>
@@ -1306,6 +1375,150 @@ document.querySelectorAll('.toc a').forEach(a => {
     if (details) details.open = true;
   });
 });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+<script>
+(function() {
+  const input = document.getElementById('searchInput');
+  const hideCheck = document.getElementById('hideNonMatches');
+  const stats = document.getElementById('searchStats');
+  const sections = Array.from(document.querySelectorAll('details'));
+  
+  // Build search index: one entry per card, plus section summaries
+  const entries = [];
+  sections.forEach((section, si) => {
+    const summary = section.querySelector('summary')?.textContent || '';
+    const cards = section.querySelectorAll('.card');
+    if (cards.length === 0) {
+      // Section without cards (e.g. changelog)
+      entries.push({
+        sectionIdx: si,
+        title: summary,
+        cardTitle: '',
+        text: section.textContent || '',
+        el: section
+      });
+    }
+    cards.forEach(card => {
+      const cardTitle = card.querySelector('.card-title')?.textContent || '';
+      entries.push({
+        sectionIdx: si,
+        title: summary,
+        cardTitle: cardTitle,
+        text: card.textContent || '',
+        el: card,
+        section: section
+      });
+    });
+  });
+
+  const fuse = new Fuse(entries, {
+    keys: [
+      { name: 'title', weight: 0.3 },
+      { name: 'cardTitle', weight: 0.4 },
+      { name: 'text', weight: 0.3 }
+    ],
+    threshold: 0.35,
+    ignoreLocation: true,
+    includeMatches: true,
+    minMatchCharLength: 2
+  });
+
+  let debounceTimer;
+  
+  function clearHighlights() {
+    document.querySelectorAll('mark.search-hl').forEach(m => {
+      const parent = m.parentNode;
+      parent.replaceChild(document.createTextNode(m.textContent), m);
+      parent.normalize();
+    });
+  }
+
+  function highlightText(node, terms) {
+    if (!terms.length) return;
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    
+    const regex = new RegExp('(' + terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'gi');
+    
+    textNodes.forEach(tn => {
+      if (tn.parentElement?.closest('.search-bar, .controls, nav.toc, script, style')) return;
+      if (tn.parentElement?.tagName === 'MARK') return;
+      const val = tn.nodeValue;
+      if (!regex.test(val)) return;
+      regex.lastIndex = 0;
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      let match;
+      while ((match = regex.exec(val)) !== null) {
+        if (match.index > last) frag.appendChild(document.createTextNode(val.slice(last, match.index)));
+        const mark = document.createElement('mark');
+        mark.className = 'search-hl';
+        mark.textContent = match[0];
+        frag.appendChild(mark);
+        last = regex.lastIndex;
+      }
+      if (last < val.length) frag.appendChild(document.createTextNode(val.slice(last)));
+      tn.parentNode.replaceChild(frag, tn);
+    });
+  }
+
+  function doSearch() {
+    const query = input.value.trim();
+    clearHighlights();
+    
+    if (!query) {
+      sections.forEach(s => {
+        s.classList.remove('search-dimmed', 'search-hidden');
+      });
+      stats.textContent = '';
+      return;
+    }
+
+    const results = fuse.search(query);
+    const matchedSections = new Set(results.map(r => r.item.sectionIdx));
+    
+    // Collect search terms for highlighting
+    const terms = query.split(/\s+/).filter(t => t.length >= 2);
+    
+    const hideMode = hideCheck.checked;
+    sections.forEach((s, i) => {
+      if (matchedSections.has(i)) {
+        s.classList.remove('search-dimmed', 'search-hidden');
+        s.open = true;
+        highlightText(s, terms);
+      } else {
+        s.classList.remove('search-dimmed', 'search-hidden');
+        s.classList.add(hideMode ? 'search-hidden' : 'search-dimmed');
+      }
+    });
+    
+    stats.textContent = matchedSections.size + '/' + sections.length + ' secties';
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(doSearch, 250);
+  });
+  
+  hideCheck.addEventListener('change', doSearch);
+  
+  // Ctrl+K / Cmd+K shortcut
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      input.focus();
+      input.select();
+    }
+    if (e.key === 'Escape' && document.activeElement === input) {
+      input.value = '';
+      doSearch();
+      input.blur();
+    }
+  });
+})();
 </script>
 
 </body>
