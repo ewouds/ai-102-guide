@@ -270,10 +270,11 @@
     min-height: 1.2em;
   }
   mark {
-    background: rgba(56, 189, 248, 0.25);
+    background: none;
     color: var(--accent);
-    border-radius: 2px;
-    padding: 0 2px;
+    border-bottom: 2px dashed var(--accent);
+    border-radius: 0;
+    padding: 0;
   }
   details.search-dimmed {
     opacity: 0.25;
@@ -1451,7 +1452,8 @@ document.querySelectorAll('.toc a').forEach(a => {
     const textNodes = [];
     while (walker.nextNode()) textNodes.push(walker.currentNode);
     
-    const regex = new RegExp('(' + terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'gi');
+    // Word boundary matching only
+    const regex = new RegExp('\\b(' + terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'gi');
     
     textNodes.forEach(tn => {
       if (tn.parentElement?.closest('.search-bar, .controls, nav.toc, script, style')) return;
@@ -1475,16 +1477,21 @@ document.querySelectorAll('.toc a').forEach(a => {
     });
   }
 
-  // Extract actual matched substrings from Fuse.js results
+  // Extract matched WHOLE words from Fuse.js results
   function extractMatchedTerms(results) {
     const terms = new Set();
     results.forEach(r => {
       if (!r.matches) return;
       r.matches.forEach(m => {
-        if (!m.indices) return;
+        if (!m.indices || !m.value) return;
         m.indices.forEach(([start, end]) => {
-          const word = m.value.slice(start, end + 1);
-          if (word.length >= 2) terms.add(word);
+          const val = m.value;
+          let ws = start;
+          while (ws > 0 && /\S/.test(val[ws - 1])) ws--;
+          let we = end;
+          while (we < val.length - 1 && /\S/.test(val[we + 1])) we++;
+          const word = val.slice(ws, we + 1).replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+          if (word.length >= 3) terms.add(word);
         });
       });
     });
