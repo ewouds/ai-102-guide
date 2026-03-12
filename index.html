@@ -582,9 +582,100 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
-<!-- ===== 9. CONTENT SAFETY ===== -->
+<!-- ===== 9. PROMPT FLOW & EVALUATIONS ===== -->
+<details id="prompt-flow">
+<summary>9. Prompt Flow & Evaluations</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">Drie Flow Types</div>
+<table>
+  <tr><th>Type</th><th>Wat</th><th>Wanneer</th></tr>
+  <tr><td><strong>Standard</strong></td><td>Sequentiële DAG van nodes</td><td>RAG pipelines, data processing</td></tr>
+  <tr><td><strong>Chat</strong></td><td>Standard + chat history input</td><td>Conversational apps</td></tr>
+  <tr><td><strong>Evaluation</strong></td><td>Scoort outputs van andere flows</td><td>Kwaliteitsmeting, LLM-as-judge</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Node Types</div>
+<table>
+  <tr><th>Node</th><th>Functie</th><th>Voorbeeld</th></tr>
+  <tr><td><strong>LLM</strong></td><td>API call naar taalmodel</td><td>Generate answer, score quality</td></tr>
+  <tr><td><strong>Python</strong></td><td>Custom Python code</td><td>Search API call, data transformatie</td></tr>
+  <tr><td><strong>Prompt</strong></td><td>Jinja2 template rendering</td><td>Context + vraag → prompt samenstellen</td></tr>
+</table>
+<p>Nodes verbonden via <code>${node_name.output}</code> referenties in een <strong>DAG</strong> (Directed Acyclic Graph)</p>
+</div>
+
+<div class="card">
+<div class="card-title">Variants</div>
+<ul>
+  <li>Meerdere versies van dezelfde node (bv. verschillende prompts)</li>
+  <li>A/B testen: run beide variants → vergelijk met evaluation flow</li>
+  <li>Gedefinieerd in <code>flow.dag.yaml</code> onder <code>node_variants</code></li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Evaluation Metrics (LLM-as-Judge)</div>
+<table>
+  <tr><th>Metric</th><th>Wat meet het</th><th>Diagnose bij lage score</th></tr>
+  <tr><td><strong>Groundedness</strong></td><td>Is antwoord gebaseerd op context?</td><td>Model hallucineert → betere system prompt</td></tr>
+  <tr><td><strong>Relevance</strong></td><td>Beantwoordt het de vraag?</td><td>Verkeerde chunks → <strong>retrieval probleem</strong></td></tr>
+  <tr><td><strong>Coherence</strong></td><td>Is het logisch/leesbaar?</td><td>Slechte prompt template</td></tr>
+  <tr><td><strong>Fluency</strong></td><td>Grammaticaal correct?</td><td>Model/taal mismatch</td></tr>
+  <tr><td><strong>Similarity</strong></td><td>Lijkt op ground truth?</td><td>F1-achtige vergelijking</td></tr>
+</table>
+<p><strong>Diagnose-regel:</strong> Groundedness hoog + Relevance laag = retrieval probleem (verkeerde chunks). Groundedness laag = hallucination (model probleem).</p>
+</div>
+
+<div class="card">
+<div class="card-title">Batch Runs & Evaluation Runs</div>
+<ul>
+  <li><strong>Batch run:</strong> voer flow uit op dataset (JSONL) → genereer antwoorden</li>
+  <li><strong>Evaluation run:</strong> voer eval flow uit tegen batch resultaten → scores per rij</li>
+  <li>Column mapping: koppel eval inputs aan batch outputs via <code>--column-mapping</code></li>
+  <li>CLI: <code>pf run create --flow ... --data ... --run &lt;baseline&gt; --name ...</code></li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Connections</div>
+<ul>
+  <li>Bewaar credentials los van flow code</li>
+  <li>Types: AzureOpenAI, OpenAI, CognitiveSearch, Custom</li>
+  <li><code>auth_mode: meid_token</code> → Entra ID (geen API key nodig)</li>
+  <li>CLI: <code>pf connection create --file connection.yaml</code></li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Deployment</div>
+<ul>
+  <li>Flow deployen als <strong>managed online endpoint</strong> in Foundry</li>
+  <li>Versioning, traffic splitting, autoscaling</li>
+  <li>Monitoring via Application Insights</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">SDK vs Portal</div>
+<ul>
+  <li><strong>New Foundry UI:</strong> Prompt Flow vervangen door "Workflows" (agent orchestratie)</li>
+  <li><strong>Classic Foundry:</strong> Prompt Flow UI beschikbaar (hub-based projects only)</li>
+  <li><strong>SDK/CLI:</strong> <code>promptflow</code> Python package + <code>pf</code> CLI — werkt altijd</li>
+  <li><strong>VS Code extension:</strong> visuele DAG editor</li>
+  <li><strong>Examen:</strong> focust op concepten + SDK, niet portal klikpaden</li>
+</ul>
+</div>
+
+</div>
+</details>
+
+<!-- ===== 10. CONTENT SAFETY ===== -->
 <details id="content-safety">
-<summary>9. Content Safety</summary>
+<summary>10. Content Safety</summary>
 <div class="section-content">
 
 <div class="card">
@@ -602,6 +693,30 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <li>Configureerbaar per deployment</li>
   <li>Werken op <strong>zowel input als output</strong></li>
 </ul>
+</div>
+
+<div class="card">
+<div class="card-title">Threshold Configuratie</div>
+<table>
+  <tr><th>Threshold instelling</th><th>Wat wordt geblokkeerd</th><th>Wat wordt doorgelaten</th></tr>
+  <tr><td><strong>Low</strong> (strengst)</td><td>low + medium + high</td><td>alleen safe</td></tr>
+  <tr><td><strong>Medium</strong> (default)</td><td>medium + high</td><td>safe + low</td></tr>
+  <tr><td><strong>High</strong> (meest permissief)</td><td>alleen high</td><td>safe + low + medium</td></tr>
+</table>
+<p>Per categorie apart instelbaar, input en output filters <strong>onafhankelijk</strong> configureerbaar.</p>
+</div>
+
+<div class="card">
+<div class="card-title">API Response bij Blokkering</div>
+<pre class="pipeline">HTTP 400 — content_filter error
+├── content_filter_result
+│   ├── hate: {filtered: false, severity: "safe"}
+│   ├── sexual: {filtered: true, severity: "high"}  ← triggerde
+│   ├── violence: {filtered: false, severity: "safe"}
+│   └── self_harm: {filtered: false, severity: "safe"}
+├── custom_blocklists: {filtered: true, details: [{id: "...", filtered: true}]}
+└── jailbreak: {detected: false}</pre>
+<p><strong>Let op:</strong> een echte blokkering geeft een <strong>400 error</strong>, niet een beleefde weigering van het model.</p>
 </div>
 
 <div class="card">
@@ -643,7 +758,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
 <!-- ===== 10. AGENTIC SOLUTIONS ===== -->
 <details id="agentic">
-<summary>10. Agentic Solutions</summary>
+<summary>11. Agentic Solutions</summary>
 <div class="section-content">
 
 <div class="card">
@@ -657,13 +772,26 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 
 <div class="card">
-<div class="card-title">Foundry Agent Service</div>
-<ul>
-  <li>Bouwt voort op <strong>Assistants API</strong> (threads, runs)</li>
-  <li>Extra tools bovenop Assistants: <strong>Bing grounding</strong>, <strong>Azure AI Search</strong>, <strong>Azure Functions</strong>, <strong>OpenAPI specs</strong></li>
-  <li>Managed: geen infra beheer</li>
-  <li>Foundry-native manier om agents te bouwen</li>
-</ul>
+<div class="card-title">De Agent Loop</div>
+<pre class="pipeline"><span class="node">Observe</span> → <span class="node">Think</span> → <span class="node">Act</span> → <span class="node">Observe Result</span> → <span class="highlight">Herhaal tot klaar</span></pre>
+<p>Het model <strong>beslist zelf</strong> welke tools aan te roepen en wanneer te stoppen. Bij function calling beslist de developer.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Foundry Agent Service — Ingebouwde Tools</div>
+<table>
+  <tr><th>Tool</th><th>Functie</th></tr>
+  <tr><td><strong>Code Interpreter</strong></td><td>Python sandbox — berekeningen, grafieken, data-analyse</td></tr>
+  <tr><td><strong>File Search</strong></td><td>Doorzoekt geüploade documenten (vector search)</td></tr>
+  <tr><td><strong>Azure Functions</strong></td><td>Custom code aanroepen — jouw eigen API's/logica</td></tr>
+</table>
+<p><strong>Grounding connections</strong> (extra bronnen): Azure AI Search, Bing Search, SharePoint, Microsoft Fabric</p>
+</div>
+
+<div class="card">
+<div class="card-title">Assistants API — Run Lifecycle</div>
+<pre class="pipeline"><span class="node">queued</span> → <span class="node">in_progress</span> → <span class="highlight">requires_action</span> → <span class="node">completed</span></pre>
+<p><code>requires_action</code> = model wil een tool aanroepen. Jij voert de tool uit en stuurt het resultaat terug via <code>submit_tool_outputs</code>.</p>
 </div>
 
 <div class="card">
@@ -691,7 +819,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
 <!-- ===== 11. AI SEARCH ===== -->
 <details id="ai-search">
-<summary>11. Azure AI Search</summary>
+<summary>12. Azure AI Search</summary>
 <div class="section-content">
 
 <div class="card">
@@ -850,7 +978,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
 <!-- ===== 7. RAG ===== -->
 <details id="rag">
-<summary>12. RAG Pattern</summary>
+<summary>13. RAG Pattern</summary>
 <div class="section-content">
 
 <div class="card">
@@ -894,7 +1022,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
 <!-- ===== 8. LESSONS ===== -->
 <details id="lessons">
-<summary>13. Geleerde Lessen</summary>
+<summary>14. Geleerde Lessen</summary>
 <div class="section-content">
 
 <div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
@@ -929,7 +1057,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
 <!-- ===== 9. GLOSSARY ===== -->
 <details id="glossary" open>
-<summary>14. Begrippenlijst</summary>
+<summary>15. Begrippenlijst</summary>
 <div class="section-content">
 
 <div class="card">
@@ -1103,6 +1231,18 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 <div class="card">
 <table>
   <tr><th>Datum</th><th>Sessie</th><th>Wijzigingen</th></tr>
+  <tr>
+    <td>12 mrt 2026</td>
+    <td>8-11 — Prompt Flow Lab + Content Safety Lab + Agentic</td>
+    <td>
+      <ul>
+        <li>Sectie 9 (Prompt Flow & Evaluations) toegevoegd: 3 flow types, node types, variants, evaluation metrics, diagnose-regels, batch/eval runs, connections, deployment, SDK vs portal</li>
+        <li>Sectie 10 (Content Safety) aangevuld: threshold configuratie tabel, API response structuur bij blokkering</li>
+        <li>Sectie 11 (Agentic) aangevuld: agent loop (observe→think→act), ingebouwde tools tabel, run lifecycle, grounding connections</li>
+        <li>Secties hernummerd (9-15)</li>
+      </ul>
+    </td>
+  </tr>
   <tr>
     <td>11 mrt 2026</td>
     <td>7 — Function Calling + Assistants API + Foundry + Content Safety + Agentic</td>
