@@ -118,6 +118,40 @@
   }
   tr:hover td { background: var(--surface); }
 
+  /* Responsive tables */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1rem 0;
+  }
+  .table-wrap table { margin: 0; }
+
+  @media (max-width: 640px) {
+    /* Stack tables on narrow screens */
+    table.stackable thead { display: none; }
+    table.stackable tr {
+      display: block;
+      margin-bottom: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    table.stackable td {
+      display: block;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    table.stackable td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: var(--accent);
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 0.15rem;
+    }
+  }
+
   .tag {
     display: inline-block;
     padding: 0.15rem 0.5rem;
@@ -183,10 +217,15 @@
     font-style: italic;
   }
 
-  .toc { margin: 1.5rem 0; }
+  .toc { margin: 0.5rem 0; }
   .toc a { color: var(--accent); text-decoration: none; }
   .toc a:hover { text-decoration: underline; }
   .toc li { margin-bottom: 0.3rem; }
+  .toc-details > summary {
+    font-size: 1.1rem;
+    border-left-color: var(--accent);
+    color: var(--accent);
+  }
 
   /* Expand/collapse all buttons */
   .controls {
@@ -284,10 +323,14 @@
   details.search-hidden { display: none; }
 
   @media (max-width: 640px) {
-    body { padding: 1rem; }
+    body { padding: 0.75rem; }
+    h1 { font-size: 1.5rem; }
+    summary { font-size: 1.1rem; }
     .glossary-grid { grid-template-columns: 1fr; }
     .glossary-grid dt { border-bottom: none; padding-bottom: 0; }
-    summary { font-size: 1.1rem; }
+    .section-content { padding: 0.75rem; }
+    .card { padding: 0.75rem; }
+    pre { font-size: 0.8rem; padding: 0.75rem; }
   }
 </style>
 </head>
@@ -309,12 +352,13 @@
 </div>
 
 <div class="controls">
-  <button onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">📖 Alles openen</button>
-  <button onclick="document.querySelectorAll('details').forEach(d=>d.open=false)">📕 Alles sluiten</button>
+  <button onclick="document.querySelectorAll('details:not(.toc-details)').forEach(d=>d.open=true)">📖 Alles openen</button>
+  <button onclick="document.querySelectorAll('details:not(.toc-details)').forEach(d=>d.open=false)">📕 Alles sluiten</button>
 </div>
 
+<details class="toc-details" open>
+<summary>📑 Inhoud</summary>
 <nav class="toc">
-<strong>Inhoud</strong> <span style="color:var(--muted);font-size:0.85rem">(klik om te navigeren)</span>
 <ul>
   <li><a href="#ml-fundamentals">1. ML Fundamentals</a></li>
   <li><a href="#prompt-engineering">2. Prompt Engineering</a></li>
@@ -335,6 +379,7 @@
   <li><a href="#changelog">📋 Changelog</a></li>
 </ul>
 </nav>
+</details>
 
 <!-- ===== 1. ML FUNDAMENTALS ===== -->
 <details id="ml-fundamentals">
@@ -1575,6 +1620,27 @@ document.querySelectorAll('.toc a').forEach(a => {
     const details = document.getElementById(id);
     if (details) details.open = true;
   });
+});
+
+// Responsive tables: wrap in scrollable container + add data-labels for mobile stacking
+document.querySelectorAll('.section-content table').forEach(table => {
+  // Wrap in scroll container
+  const wrapper = document.createElement('div');
+  wrapper.className = 'table-wrap';
+  table.parentNode.insertBefore(wrapper, table);
+  wrapper.appendChild(table);
+
+  // Add stackable class and data-label attrs
+  const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent.trim());
+  if (headers.length > 0 && headers.length <= 5) {
+    table.classList.add('stackable');
+    table.querySelectorAll('tbody tr, tr:not(:first-child)').forEach(tr => {
+      const cells = tr.querySelectorAll('td');
+      cells.forEach((td, i) => {
+        if (headers[i]) td.setAttribute('data-label', headers[i]);
+      });
+    });
+  }
 });
 </script>
 
