@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-102 Cheat Sheet</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #475569;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 0.88rem;
+  }
+  h1 { font-size: 1.4rem; color: var(--accent); margin-bottom: 0.25rem; }
+  .sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; }
+  h2 {
+    font-size: 1rem;
+    color: var(--accent2);
+    margin-top: 1.25rem;
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 0.9rem; color: var(--green); margin-top: 0.75rem; margin-bottom: 0.25rem; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+  }
+  .box-title { font-weight: 700; color: var(--accent); font-size: 0.85rem; margin-bottom: 0.3rem; }
+  .box ul { padding-left: 1.1rem; margin: 0; }
+  .box li { margin-bottom: 0.15rem; font-size: 0.84rem; }
+  .box li::marker { color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; margin: 0.4rem 0; font-size: 0.82rem; }
+  th { background: var(--surface); color: var(--accent); text-align: left; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--accent); }
+  td { padding: 0.25rem 0.5rem; border-bottom: 1px solid var(--border); }
+
+  .tag { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.75rem; font-weight: 700; }
+  .t-r { background: #7f1d1d; color: var(--red); }
+  .t-g { background: #064e3b; color: var(--green); }
+  .t-y { background: #713f12; color: var(--yellow); }
+  .t-b { background: #1e3a5f; color: var(--accent); }
+
+  code { background: #334155; padding: 0.1rem 0.3rem; border-radius: 2px; font-size: 0.82rem; color: var(--green); }
+
+  .mem { border-left: 3px solid var(--yellow); padding-left: 0.5rem; margin: 0.4rem 0; color: var(--yellow); font-size: 0.84rem; }
+
+  .full { grid-column: 1 / -1; }
+
+  .weights { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .weight-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; text-align: center; flex: 1; min-width: 120px; }
+  .weight-pct { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+  .weight-label { font-size: 0.72rem; color: var(--muted); }
+
+  a { color: var(--accent); }
+  .back { font-size: 0.8rem; margin-bottom: 0.5rem; }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    body { padding: 0.5rem; font-size: 0.84rem; }
+    h1 { font-size: 1.2rem; }
+  }
+
+  @media print {
+    body { background: white; color: black; font-size: 8pt; padding: 0; max-width: 100%; }
+    .box { border: 1px solid #ccc; background: #f9f9f9; break-inside: avoid; }
+    h1, h2, h3, .box-title, th, code { color: black; }
+    .mem { color: #b45309; border-color: #b45309; }
+    .tag { border: 1px solid #999; }
+    .back { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="back"><a href="index.html">← Terug naar Reference Guide</a></div>
+<h1>🧠 AI-102 Cheat Sheet</h1>
+<p class="sub">Dagelijkse herhaling — alles wat je vanbuiten moet kennen. Laatst bijgewerkt: 13 mrt 2026 (t/m Week 6)</p>
+
+<div class="weights">
+  <div class="weight-item"><div class="weight-pct">20-25%</div><div class="weight-label">Plan & Manage</div></div>
+  <div class="weight-item"><div class="weight-pct">15-20%</div><div class="weight-label">Generative AI</div></div>
+  <div class="weight-item"><div class="weight-pct">5-10%</div><div class="weight-label">Agentic</div></div>
+  <div class="weight-item"><div class="weight-pct">10-15%</div><div class="weight-label">Computer Vision</div></div>
+  <div class="weight-item"><div class="weight-pct">15-20%</div><div class="weight-label">NLP</div></div>
+  <div class="weight-item"><div class="weight-pct">15-20%</div><div class="weight-label">Knowledge Mining</div></div>
+</div>
+
+<!-- ===== PLAN & MANAGE ===== -->
+<h2>📋 Plan & Manage (20-25%)</h2>
+<div class="grid">
+
+<div class="box">
+<div class="box-title">Responsible AI — 6 Principes</div>
+<ul>
+  <li><strong>F</strong>airness — geen bias/discriminatie</li>
+  <li><strong>R</strong>eliability & Safety — consistent + veilig</li>
+  <li><strong>P</strong>rivacy & Security — databescherming</li>
+  <li><strong>I</strong>nclusiveness — toegankelijk voor iedereen</li>
+  <li><strong>T</strong>ransparency — uitlegbaar</li>
+  <li><strong>A</strong>ccountability — mensen verantwoordelijk</li>
+</ul>
+<div class="mem">🧠 FRPITA</div>
+</div>
+
+<div class="box">
+<div class="box-title">AI Services: Multi vs Single Resource</div>
+<ul>
+  <li><strong>Multi-service:</strong> 1 key, meerdere services → minder beheer</li>
+  <li><strong>Single-service:</strong> apart per service → eigen RBAC/budget</li>
+  <li>Custom subdomain <strong>verplicht</strong> voor Entra ID/token auth</li>
+  <li>Soft-delete: <strong>purge</strong> nodig voor hergebruik naam</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Content Safety — HVSS</div>
+<table>
+  <tr><th>Cat.</th><th>Levels</th></tr>
+  <tr><td>Hate, Violence, Sexual, Self-harm</td><td>safe → low → medium → high</td></tr>
+</table>
+<ul>
+  <li>Default: medium+ geblokkeerd</li>
+  <li>Threshold <strong>Low</strong> = strengst (alleen safe door)</li>
+  <li>Threshold <strong>High</strong> = meest permissief (alleen high geblokt)</li>
+  <li>Blokkering = <strong>HTTP 400</strong>, niet beleefde weigering</li>
+  <li><strong>Blocklists:</strong> exacte woorden, altijd geblokt</li>
+  <li><strong>Prompt Shields:</strong> jailbreak + indirect injection</li>
+  <li><strong>Groundedness:</strong> hallucination check (≠ content filter!)</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Foundry (voorheen AI Studio)</div>
+<ul>
+  <li><strong>Hub</strong> = gedeelde container (connections, compute)</li>
+  <li><strong>Project</strong> = werkruimte in Hub (deployments, flows, agents)</li>
+  <li>Model Catalog deployment:
+    <ul>
+      <li><strong>Azure OpenAI</strong> — per token, MS-managed</li>
+      <li><strong>Serverless/MaaS</strong> — per token, Llama/Mistral</li>
+      <li><strong>Managed Compute</strong> — per uur, dedicated VM</li>
+    </ul>
+  </li>
+  <li>Limited Access: gezichts-ID features → MS goedkeuring</li>
+</ul>
+</div>
+
+<div class="box full">
+<div class="box-title">Networking & Auth</div>
+<ul>
+  <li>Managed Identity: geen credentials, automatische rotatie</li>
+  <li>Private Endpoints: AI services in VNET isolatie</li>
+  <li>API key auth uitgeschakeld → Bearer token via <code>az account get-access-token</code></li>
+  <li>RBAC rollen: <strong>Cognitive Services User</strong> (consume), <strong>Contributor</strong> (manage)</li>
+</ul>
+</div>
+
+</div>
+
+<!-- ===== GENERATIVE AI ===== -->
+<h2>🤖 Generative AI (15-20%)</h2>
+<div class="grid">
+
+<div class="box">
+<div class="box-title">Azure OpenAI Deployments</div>
+<table>
+  <tr><th>Type</th><th>Kenmerken</th></tr>
+  <tr><td><strong>Standard</strong></td><td>Pay-per-token, auto-upgrade, gedeeld</td></tr>
+  <tr><td><strong>Provisioned (PTU)</strong></td><td>Gereserveerd, voorspelbaar, productie</td></tr>
+  <tr><td><strong>Global</strong></td><td>MS kiest regio, hogere limieten</td></tr>
+</table>
+<div class="mem">🧠 Quota = per model per regio (niet per deployment!)</div>
+</div>
+
+<div class="box">
+<div class="box-title">Prompt Engineering</div>
+<ul>
+  <li><strong>Zero-shot:</strong> directe vraag, geen voorbeelden</li>
+  <li><strong>Few-shot:</strong> voorbeelden in prompt</li>
+  <li><strong>CoT:</strong> "denk stap voor stap" → betere redenering</li>
+  <li>Rollen: <code>system</code> → <code>user</code> → <code>assistant</code></li>
+  <li>Temperature: 0 = deterministisch, 1+ = creatief</li>
+  <li>Bij RAG: temperature weinig effect</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Function Calling — 3 Stappen</div>
+<ol>
+  <li><strong>Define</strong> — tools in request</li>
+  <li><strong>Decide</strong> — model kiest → <code>finish_reason: "tool_calls"</code></li>
+  <li><strong>Execute</strong> — JIJ voert uit, stuurt result als <code>tool</code> message</li>
+</ol>
+<ul>
+  <li>Model voert NOOIT zelf uit!</li>
+  <li>Parallel calls: elke call eigen <code>tool_call_id</code></li>
+  <li><code>tool_choice</code>: auto | none | required | specifiek</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Assistants API vs Chat Completions</div>
+<table>
+  <tr><th></th><th>Chat Completions</th><th>Assistants</th></tr>
+  <tr><td>State</td><td>Stateless (jij)</td><td>Stateful (service)</td></tr>
+  <tr><td>Tools</td><td>Function calling</td><td>+ Code Interpreter + File Search</td></tr>
+  <tr><td>Exec</td><td>Synchroon</td><td>Async (poll/stream)</td></tr>
+</table>
+<ul>
+  <li>Flow: Assistant → Thread → Message → Run → Poll</li>
+  <li><code>requires_action</code> → submit_tool_outputs</li>
+  <li>Threads: geen token limiet (auto truncate)</li>
+</ul>
+</div>
+
+<div class="box full">
+<div class="box-title">On Your Data (RAG built-in)</div>
+<ul>
+  <li>Koppel AI Search index aan OpenAI deployment → automatisch RAG met citations</li>
+  <li>Auth: API key (dev) of Managed Identity (prod)</li>
+  <li>RBAC: OpenAI → Search = <strong>Search Index Data Reader</strong> · Search → OpenAI = <strong>Cognitive Services OpenAI User</strong></li>
+  <li>Search API access = <strong>"Both"</strong> of <strong>"RBAC"</strong> (niet API-only!)</li>
+</ul>
+</div>
+
+</div>
+
+<!-- ===== KNOWLEDGE MINING ===== -->
+<h2>🔍 Knowledge Mining (15-20%)</h2>
+<div class="grid">
+
+<div class="box">
+<div class="box-title">AI Search Pipeline</div>
+<ul>
+  <li><strong>Data Source</strong> → <strong>Indexer</strong> → (<strong>Skillset</strong>) → <strong>Index</strong></li>
+  <li>Push (jij stuurt data) vs Pull (indexer op schema)</li>
+  <li>Skillset: OCR → Merge → Split → Embedding</li>
+  <li><strong>Merge skill</strong>: essentieel! Combineert tekst + OCR output</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Search Types</div>
+<table>
+  <tr><th>Type</th><th>Mechanisme</th><th>Best voor</th></tr>
+  <tr><td><strong>BM25</strong></td><td>Inverted index</td><td>Exacte termen, codes</td></tr>
+  <tr><td><strong>Vector</strong></td><td>HNSW, cosine sim</td><td>Semantisch, synoniemen</td></tr>
+  <tr><td><strong>Hybrid</strong></td><td>BM25 + Vector → RRF</td><td>Bijna altijd best</td></tr>
+</table>
+<div class="mem">🧠 Hybrid = parallel (niet sequentieel!), RRF combineert</div>
+</div>
+
+<div class="box">
+<div class="box-title">Semantic Ranker</div>
+<ul>
+  <li>GEEN search type → het is <strong>L2 re-ranking</strong> (post-processing)</li>
+  <li>Herordent top-N resultaten op semantische relevantie</li>
+  <li>Voegt <strong>captions</strong> + <strong>answers</strong> toe</li>
+  <li>Werkt alleen op tekstvelden, niet op vectoren</li>
+  <li>Standard tier+, apart geprijsd</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Chunk-level Index</div>
+<ul>
+  <li><strong>Index Projections:</strong> chunks als aparte records</li>
+  <li>Key field: <code>searchable=true</code> + <code>analyzer=keyword</code></li>
+  <li><code>sourceContext</code> moet matchen met split skill output</li>
+  <li><code>projectionMode: skipIndexingParentDocuments</code></li>
+  <li>Security trimming: filterveld + OData filter bij query</li>
+</ul>
+</div>
+
+</div>
+
+<!-- ===== AGENTIC ===== -->
+<h2>🤖 Agentic (5-10%)</h2>
+<div class="grid">
+
+<div class="box">
+<div class="box-title">Agent vs Chatbot</div>
+<ul>
+  <li>Agent: autonoom, plant stappen, meerdere rondes</li>
+  <li>Agent loop: <strong>Observe → Think → Act → herhaal</strong></li>
+  <li>Agent Service tools: Code Interpreter, File Search, Azure Functions</li>
+  <li>Grounding: AI Search, Bing, SharePoint, Fabric</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Multi-Agent Patterns</div>
+<table>
+  <tr><th>Pattern</th><th>Flow</th></tr>
+  <tr><td><strong>Sequential</strong></td><td>A → B → C</td></tr>
+  <tr><td><strong>Parallel</strong></td><td>A + B + C → combine</td></tr>
+  <tr><td><strong>Orchestrator</strong></td><td>Manager delegeert</td></tr>
+</table>
+<div class="mem">🧠 Fine-tuning is GEEN agent capability</div>
+</div>
+
+</div>
+
+<!-- ===== PROMPT FLOW ===== -->
+<h2>🔄 Prompt Flow & Evaluations</h2>
+<div class="grid">
+
+<div class="box">
+<div class="box-title">Flow Types</div>
+<table>
+  <tr><th>Type</th><th>Wat</th></tr>
+  <tr><td><strong>Standard</strong></td><td>DAG van nodes</td></tr>
+  <tr><td><strong>Chat</strong></td><td>Standard + chat history</td></tr>
+  <tr><td><strong>Evaluation</strong></td><td>Scoort outputs van andere flows</td></tr>
+</table>
+<ul>
+  <li>Node types: LLM, Python, Prompt (Jinja2)</li>
+  <li>Variants = A/B test prompts</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">Evaluation Metrics — Diagnose</div>
+<table>
+  <tr><th>Metric</th><th>Laag = probleem</th></tr>
+  <tr><td><strong>Groundedness</strong></td><td>Hallucination → betere prompt</td></tr>
+  <tr><td><strong>Relevance</strong></td><td>Verkeerde chunks → retrieval fix</td></tr>
+  <tr><td><strong>Coherence</strong></td><td>Slechte prompt template</td></tr>
+  <tr><td><strong>Fluency</strong></td><td>Taal/model mismatch</td></tr>
+</table>
+<div class="mem">🧠 Groundedness hoog + Relevance laag = RETRIEVAL probleem</div>
+<div class="mem">🧠 Groundedness laag = HALLUCINATION probleem</div>
+</div>
+
+</div>
+
+<!-- ===== COMPUTER VISION ===== -->
+<h2>👁️ Computer Vision (10-15%)</h2>
+<div class="grid">
+
+<div class="box">
+<div class="box-title">Image Analysis 4.0 Features</div>
+<table>
+  <tr><th>Feature</th><th>Output</th></tr>
+  <tr><td><strong>Caption</strong></td><td>1 zin (alt-text)</td></tr>
+  <tr><td><strong>Dense Captions</strong></td><td>Meerdere zinnen + bboxes</td></tr>
+  <tr><td><strong>Tags</strong></td><td>Losse keywords</td></tr>
+  <tr><td><strong>Objects</strong></td><td>Naam + confidence + bbox</td></tr>
+  <tr><td><strong>People</strong></td><td>Bboxes (geen gezichtsherkenning)</td></tr>
+  <tr><td><strong>Smart Crops</strong></td><td>Slimme thumbnails</td></tr>
+  <tr><td><strong>Read</strong></td><td>OCR (tekst + posities)</td></tr>
+</table>
+<div class="mem">🧠 Florence model — niet in alle regio's!</div>
+<div class="mem">🧠 Caption ≠ Tags: zin vs keywords</div>
+</div>
+
+<div class="box">
+<div class="box-title">Custom Vision</div>
+<table>
+  <tr><th>Type</th><th>Vraag</th><th>Min. imgs</th></tr>
+  <tr><td><strong>Classification</strong></td><td>"Wat is dit?"</td><td>5/tag</td></tr>
+  <tr><td><strong>Object Detection</strong></td><td>"Wat zit waar?"</td><td>15/tag</td></tr>
+</table>
+<ul>
+  <li>Multiclass (1 tag) vs Multilabel (meerdere)</li>
+  <li><strong>Compact domain</strong> → edge: ONNX/CoreML/TF</li>
+  <li>Precision: "ben ik precies?" (false positives)</li>
+  <li>Recall: "mis ik er geen?" (false negatives)</li>
+</ul>
+</div>
+
+<div class="box">
+<div class="box-title">OCR: 3 Opties</div>
+<table>
+  <tr><th>Service</th><th>Best voor</th></tr>
+  <tr><td><strong>Image Analysis Read</strong></td><td>Foto's, screenshots, borden</td></tr>
+  <tr><td><strong>Document Intelligence</strong></td><td>Facturen, formulieren, tabellen</td></tr>
+  <tr><td><strong>AI Search OCR skill</strong></td><td>Bulk indexing pipeline</td></tr>
+</table>
+</div>
+
+<div class="box">
+<div class="box-title">Video, Spatial, Face</div>
+<h3>Video Indexer</h3>
+<ul>
+  <li>Video → doorzoekbare insights met tijdstempels</li>
+  <li>Transcripts, speakers, topics, brands, faces</li>
+  <li>Custom models: language, brands, person</li>
+</ul>
+<h3>Spatial Analysis</h3>
+<table>
+  <tr><th>Operatie</th><th>Wat</th></tr>
+  <tr><td>PersonCount</td><td>Hoeveel NU aanwezig</td></tr>
+  <tr><td>PersonCrossingLine</td><td>Hoeveel PASSEERDEN</td></tr>
+  <tr><td>PersonCrossingPolygon</td><td>Zone in/uit</td></tr>
+  <tr><td>PersonDistance</td><td>Afstand tussen mensen</td></tr>
+</table>
+<div class="mem">🧠 Edge Docker + NVIDIA GPU — niet cloud!</div>
+<h3>Face API</h3>
+<ul>
+  <li>Detectie = vrij</li>
+  <li>Verificatie/identificatie/grouping = <span class="tag t-r">Limited Access</span></li>
+</ul>
+</div>
+
+</div>
+
+<!-- ===== NLP (placeholder) ===== -->
+<h2>💬 NLP (15-20%) — <span class="tag t-y">WEEK 7</span></h2>
+<div class="grid">
+<div class="box full" style="opacity:0.5;">
+<div class="box-title">Nog niet behandeld</div>
+<ul>
+  <li>Text Analytics, Translator, Speech, CLU, Custom QA</li>
+</ul>
+</div>
+</div>
+
+<!-- ===== DOC INTELLIGENCE (placeholder) ===== -->
+<h2>📄 Document Intelligence (15-20%) — <span class="tag t-y">WEEK 8</span></h2>
+<div class="grid">
+<div class="box full" style="opacity:0.5;">
+<div class="box-title">Nog niet behandeld</div>
+<ul>
+  <li>Prebuilt models, Custom models, Composed models, Content Understanding</li>
+</ul>
+</div>
+</div>
+
+<!-- ===== GOTCHAS ===== -->
+<h2>⚡ Exam Gotchas</h2>
+<div class="grid">
+
+<div class="box full">
+<div class="box-title">Veelgemaakte fouten & valkuilen</div>
+<table>
+  <tr><th>Situatie</th><th>Fout</th><th>Juist</th></tr>
+  <tr><td>Hybrid search</td><td>BM25 daarna vector (sequentieel)</td><td>BM25 + vector <strong>parallel</strong> → RRF</td></tr>
+  <tr><td>Semantic ranker</td><td>Een search type</td><td>Post-processing <strong>re-ranking</strong> stap</td></tr>
+  <tr><td>Content filter blokkering</td><td>Model weigert beleefd</td><td><strong>HTTP 400</strong> error</td></tr>
+  <tr><td>Threshold "Low"</td><td>Meest permissief</td><td><strong>Strengst</strong> (alleen safe door)</td></tr>
+  <tr><td>Quota</td><td>Per deployment</td><td>Per <strong>model per regio</strong></td></tr>
+  <tr><td>Function calling</td><td>Model voert functie uit</td><td>Model <strong>vraagt</strong>, jij voert uit</td></tr>
+  <tr><td>Token auth</td><td>Werkt zonder custom subdomain</td><td>Custom subdomain <strong>verplicht</strong></td></tr>
+  <tr><td>Spatial Analysis</td><td>Cloud service</td><td><strong>Edge</strong> Docker container</td></tr>
+  <tr><td>People Detection</td><td>= gezichtsherkenning</td><td>Alleen <strong>bounding boxes</strong>, geen ID</td></tr>
+  <tr><td>Compact domain</td><td>Betere accuracy</td><td>Voor <strong>edge export</strong> (ONNX/CoreML)</td></tr>
+  <tr><td>Groundedness laag</td><td>Retrieval probleem</td><td><strong>Hallucination</strong> probleem</td></tr>
+  <tr><td>Relevance laag</td><td>Model probleem</td><td><strong>Retrieval</strong> probleem</td></tr>
+</table>
+</div>
+
+</div>
+
+<p style="color:var(--muted);font-size:0.75rem;text-align:right;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:0.5rem;">
+  AI-102 Cheat Sheet · Laatste update: 13 mrt 2026 · <a href="index.html">Volledige Reference Guide</a>
+</p>
+
+</body>
+</html>
