@@ -443,17 +443,73 @@
 
 </div>
 
-<!-- ===== NLP (placeholder) ===== -->
+<!-- ===== NLP ===== -->
 </div>
 <div class="domain-section" data-domain="nlp">
-<h2>💬 NLP (15-20%) — <span class="tag t-y">WEEK 7</span></h2>
+<h2>💬 NLP (15-20%)</h2>
 <div class="grid">
-<div class="box full" style="opacity:0.5;">
-<div class="box-title">Nog niet behandeld</div>
-<ul>
-  <li>Text Analytics, Translator, Speech, CLU, Custom QA</li>
-</ul>
+
+<div class="box">
+<div class="box-title">Text Analytics Features</div>
+<table>
+  <tr><th>Feature</th><th>Output</th></tr>
+  <tr><td><strong>Language Detection</strong></td><td>Taal + confidence</td></tr>
+  <tr><td><strong>Sentiment</strong></td><td>pos/neg/neutral/mixed per zin</td></tr>
+  <tr><td><strong>Key Phrases</strong></td><td>Belangrijkste begrippen</td></tr>
+  <tr><td><strong>NER</strong></td><td>Entiteiten + type</td></tr>
+  <tr><td><strong>PII</strong></td><td>Persoonsgegevens + <strong>redactie</strong></td></tr>
+  <tr><td><strong>Entity Linking</strong></td><td>→ Wikipedia (disambiguatie)</td></tr>
+</table>
+<div class="mem">🧠 PII = enige die kan redacten (***)</div>
+<div class="mem">🧠 NER = categoriseert, Entity Linking = disambigueert</div>
 </div>
+
+<div class="box">
+<div class="box-title">CLU vs Custom QA</div>
+<table>
+  <tr><th></th><th>CLU</th><th>Custom QA</th></tr>
+  <tr><td>Doel</td><td>Intent + entities</td><td>FAQ antwoorden</td></tr>
+  <tr><td>Input</td><td>"Boek vlucht naar Parijs"</td><td>"Wat zijn openingsuren?"</td></tr>
+  <tr><td>Output</td><td>Intent + entities</td><td>Exact antwoord uit KB</td></tr>
+</table>
+<ul>
+  <li>CLU entity types: <strong>Learned</strong>, <strong>List</strong>, <strong>Prebuilt</strong></li>
+  <li>QA: multi-turn, chit-chat, multi-language</li>
+  <li><strong>Orchestration:</strong> CLU routeert naar CLU of QA</li>
+</ul>
+<div class="mem">🧠 CLU zit IN de Language resource (geen apart resource)</div>
+</div>
+
+<div class="box">
+<div class="box-title">Speech Services</div>
+<table>
+  <tr><th>Feature</th><th>Richting</th></tr>
+  <tr><td><strong>STT</strong></td><td>🎤→📝 (real-time/batch/custom)</td></tr>
+  <tr><td><strong>TTS</strong></td><td>📝→🔊 (+ SSML voor controle)</td></tr>
+  <tr><td><strong>Speech Translation</strong></td><td>🎤→🌍 spraak→spraak/tekst</td></tr>
+  <tr><td><strong>Speaker Recognition</strong></td><td>🎤→👤 verificatie op stem</td></tr>
+</table>
+<div class="mem">🧠 Custom Neural Voice = Limited Access</div>
+</div>
+
+<div class="box">
+<div class="box-title">SSML + Translator</div>
+<h3>SSML tags</h3>
+<ul>
+  <li><code>&lt;voice&gt;</code> stem, <code>&lt;break&gt;</code> pauze</li>
+  <li><code>&lt;prosody&gt;</code> snelheid/toon, <code>&lt;emphasis&gt;</code> nadruk</li>
+  <li><code>&lt;say-as&gt;</code> format, <code>&lt;audio&gt;</code> invoegen</li>
+</ul>
+<h3>Translator</h3>
+<ul>
+  <li><strong>Text:</strong> synchroon, 90+ talen</li>
+  <li><strong>Document:</strong> async/batch, Blob Storage</li>
+  <li><strong>Custom:</strong> parallel sentences</li>
+  <li><strong>Transliteration:</strong> schriftconversie</li>
+</ul>
+<div class="mem">🧠 Translator (tekst→tekst) ≠ Speech Translation (spraak→spraak)</div>
+</div>
+
 </div>
 
 <!-- ===== DOC INTELLIGENCE (placeholder) ===== -->

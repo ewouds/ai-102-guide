@@ -374,8 +374,9 @@
   <li><a href="#ai-search">12. Azure AI Search</a></li>
   <li><a href="#rag">13. RAG Pattern</a></li>
   <li><a href="#computer-vision">14. Computer Vision</a></li>
-  <li><a href="#lessons">15. Geleerde Lessen</a></li>
-  <li><a href="#glossary">16. Begrippenlijst</a></li>
+  <li><a href="#nlp">15. NLP</a></li>
+  <li><a href="#lessons">16. Geleerde Lessen</a></li>
+  <li><a href="#glossary">17. Begrippenlijst</a></li>
   <li><a href="#changelog">📋 Changelog</a></li>
 </ul>
 </nav>
@@ -1286,9 +1287,124 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
+<!-- ===== 15. NLP ===== -->
+<details id="nlp">
+<summary>15. NLP (Natural Language Processing)</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">Text Analytics (Language Service) — Features</div>
+<table>
+  <tr><th>Feature</th><th>Input</th><th>Output</th></tr>
+  <tr><td><strong>Language Detection</strong></td><td>Tekst</td><td>Taal + confidence (<code>nl</code>, <code>en</code>)</td></tr>
+  <tr><td><strong>Sentiment Analysis</strong></td><td>Tekst</td><td>positive/negative/neutral/mixed + scores per zin</td></tr>
+  <tr><td><strong>Key Phrase Extraction</strong></td><td>Tekst</td><td>Belangrijkste begrippen</td></tr>
+  <tr><td><strong>NER</strong></td><td>Tekst</td><td>Entiteiten + type (Location, DateTime, Person...)</td></tr>
+  <tr><td><strong>PII Detection</strong></td><td>Tekst</td><td>Persoonsgegevens + kan <strong>redacten</strong> (vervangen door ***)</td></tr>
+  <tr><td><strong>Entity Linking</strong></td><td>Tekst</td><td>Entiteiten gekoppeld aan Wikipedia (disambiguatie)</td></tr>
+</table>
+<div class="lesson">💡 NER = categoriseert entiteiten. Entity Linking = disambigueert en linkt naar Wikipedia. PII = enige die kan redacten.</div>
+</div>
+
+<div class="card">
+<div class="card-title">CLU (Conversational Language Understanding)</div>
+<p>Opvolger van LUIS. Voor het begrijpen van <strong>intenties + entiteiten</strong> uit vrije tekst.</p>
+<table>
+  <tr><th>Concept</th><th>Wat</th><th>Voorbeeld</th></tr>
+  <tr><td><strong>Intent</strong></td><td>Wat wil de gebruiker?</td><td><code>BookFlight</code>, <code>GetWeather</code></td></tr>
+  <tr><td><strong>Entity</strong></td><td>Relevante details</td><td><code>destination=Parijs</code></td></tr>
+  <tr><td><strong>Utterance</strong></td><td>Voorbeeldzinnen</td><td>"Boek een vlucht naar {destination}"</td></tr>
+</table>
+<h3>Entity Types</h3>
+<table>
+  <tr><th>Type</th><th>Hoe</th><th>Voorbeeld</th></tr>
+  <tr><td><strong>Learned</strong></td><td>Uit gelabelde utterances</td><td>Productnamen</td></tr>
+  <tr><td><strong>List</strong></td><td>Exacte waarden</td><td>Steden: Parijs, Londen</td></tr>
+  <tr><td><strong>Prebuilt</strong></td><td>Kant-en-klaar</td><td>DateTime, Number, Temperature</td></tr>
+</table>
+<h3>Workflow</h3>
+<pre class="pipeline">1. <span class="node">Project</span> aanmaken (Language resource)
+2. <span class="node">Intents</span> definiëren
+3. <span class="node">Entities</span> definiëren (learned/list/prebuilt)
+4. <span class="node">Utterances</span> toevoegen + labelen
+5. <span class="node">Trainen</span>
+6. <span class="node">Deployen</span> → prediction endpoint
+7. <span class="node">Consumeren</span> via REST</pre>
+<div class="lesson">💡 CLU zit in de Language resource — geen aparte resource nodig.</div>
+</div>
+
+<div class="card">
+<div class="card-title">Custom Question Answering</div>
+<ul>
+  <li><strong>Bronnen:</strong> URLs (FAQ pagina's), PDF's, handmatige QA-paren</li>
+  <li><strong>Multi-turn:</strong> vervolgvragen (prompts naar sub-antwoorden)</li>
+  <li><strong>Chit-chat:</strong> ingebouwde persoonlijkheid (friendly, professional, witty)</li>
+  <li><strong>Multi-language:</strong> meerdere talen in één knowledge base</li>
+  <li>Retrieval-based: <strong>geen hallucinatie</strong> (exact antwoord uit KB)</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">CLU vs Custom QA — Wanneer Wat?</div>
+<table>
+  <tr><th>Scenario</th><th>Service</th></tr>
+  <tr><td>"Boek een vlucht naar Parijs"</td><td><strong>CLU</strong> (intent + entities)</td></tr>
+  <tr><td>"Wat zijn jullie openingsuren?"</td><td><strong>Custom QA</strong> (FAQ match)</td></tr>
+  <tr><td>"Annuleer mijn bestelling"</td><td><strong>CLU</strong> (intent: Cancel)</td></tr>
+  <tr><td>"Hoe reset ik mijn wachtwoord?"</td><td><strong>Custom QA</strong> (KB artikel)</td></tr>
+  <tr><td>Chatbot die beide moet</td><td><strong>Orchestration workflow</strong></td></tr>
+</table>
+<p><strong>Orchestration workflow:</strong> CLU project dat intents routeert naar andere projecten (CLU of QA).</p>
+</div>
+
+<div class="card">
+<div class="card-title">Speech Services</div>
+<table>
+  <tr><th>Feature</th><th>Richting</th><th>Use case</th></tr>
+  <tr><td><strong>Speech-to-Text (STT)</strong></td><td>🎤→📝</td><td>Transcriptie, dicteren</td></tr>
+  <tr><td><strong>Text-to-Speech (TTS)</strong></td><td>📝→🔊</td><td>Voorlezen, IVR</td></tr>
+  <tr><td><strong>Speech Translation</strong></td><td>🎤→🌍</td><td>Real-time vertaling spraak→spraak/tekst</td></tr>
+  <tr><td><strong>Speaker Recognition</strong></td><td>🎤→👤</td><td>Verificatie/identificatie op stem</td></tr>
+  <tr><td><strong>Intent Recognition</strong></td><td>🎤→💡</td><td>Spraak direct naar CLU intent</td></tr>
+</table>
+<h3>STT Varianten</h3>
+<ul>
+  <li><strong>Real-time:</strong> live transcriptie</li>
+  <li><strong>Batch:</strong> grote bestanden achteraf</li>
+  <li><strong>Custom Speech:</strong> eigen data voor betere accuracy (jargon, accenten)</li>
+</ul>
+<h3>SSML (Speech Synthesis Markup Language)</h3>
+<p>XML-opmaak om TTS-output te sturen:</p>
+<table>
+  <tr><th>Tag</th><th>Functie</th></tr>
+  <tr><td><code>&lt;voice name="..."&gt;</code></td><td>Stem kiezen</td></tr>
+  <tr><td><code>&lt;break time="500ms"/&gt;</code></td><td>Pauze</td></tr>
+  <tr><td><code>&lt;prosody rate/pitch&gt;</code></td><td>Snelheid/toonhoogte</td></tr>
+  <tr><td><code>&lt;emphasis level="strong"&gt;</code></td><td>Nadruk</td></tr>
+  <tr><td><code>&lt;say-as interpret-as="date"&gt;</code></td><td>Uitspraak format</td></tr>
+  <tr><td><code>&lt;audio src="..."/&gt;</code></td><td>Audio invoegen</td></tr>
+</table>
+<div class="lesson">💡 Custom Neural Voice (eigen stem trainen) vereist Limited Access goedkeuring — net als Face API.</div>
+</div>
+
+<div class="card">
+<div class="card-title">Translator</div>
+<table>
+  <tr><th>Feature</th><th>Wat</th><th>Bijzonder</th></tr>
+  <tr><td><strong>Text Translation</strong></td><td>Tekst vertalen (90+ talen)</td><td>Synchroon</td></tr>
+  <tr><td><strong>Document Translation</strong></td><td>Hele documenten</td><td><strong>Async/batch</strong>, behoudt opmaak, Blob Storage</td></tr>
+  <tr><td><strong>Custom Translator</strong></td><td>Domein-specifiek</td><td>Parallel sentences als trainingsdata</td></tr>
+  <tr><td><strong>Transliteration</strong></td><td>Schriftconversie</td><td>Kanji → Romaji</td></tr>
+</table>
+<div class="lesson">💡 Translator (tekst→tekst) ≠ Speech Translation (spraak→spraak/tekst) — twee aparte services.</div>
+</div>
+
+</div>
+</details>
+
 <!-- ===== 8. LESSONS ===== -->
 <details id="lessons">
-<summary>15. Geleerde Lessen</summary>
+<summary>16. Geleerde Lessen</summary>
 <div class="section-content">
 
 <div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
@@ -1325,13 +1441,19 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 <div class="lesson">💡 Precision = "ben ik precies?" (hoge precision, weinig false positives), Recall = "mis ik er geen?" (hoge recall, weinig false negatives)</div>
 <div class="lesson">💡 Spatial Analysis PersonCount = hoeveel nu aanwezig, PersonCrossingLine = hoeveel passeerden — verschil tussen aanwezigheid vs passage</div>
 <div class="lesson">💡 Face API: detectie is vrij, alles met identiteit (verification, identification, grouping) vereist Limited Access goedkeuring</div>
+<div class="lesson">💡 CLU zit in de Language resource — geen aparte resource nodig</div>
+<div class="lesson">💡 NER categoriseert entiteiten, Entity Linking disambigueert en linkt naar Wikipedia</div>
+<div class="lesson">💡 PII Detection is de enige Text Analytics feature die tekst kan redacten</div>
+<div class="lesson">💡 Document Translation is async/batch via Blob Storage — niet synchroon zoals Text Translation</div>
+<div class="lesson">💡 Custom Neural Voice vereist Limited Access goedkeuring</div>
+<div class="lesson">💡 Orchestration workflow: CLU project dat intents routeert naar CLU of Custom QA projecten</div>
 
 </div>
 </details>
 
 <!-- ===== 9. GLOSSARY ===== -->
 <details id="glossary" open>
-<summary>16. Begrippenlijst</summary>
+<summary>17. Begrippenlijst</summary>
 <div class="section-content">
 
 <div class="card">
@@ -1356,6 +1478,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
   <dt>Caption</dt>
   <dd>Image Analysis feature die één beschrijvende zin genereert voor het hele beeld — gebruikt Florence model, ideaal voor alt-text</dd>
+
+  <dt>CLU</dt>
+  <dd>Conversational Language Understanding — opvolger van LUIS, begrijpt intents en entities uit vrije tekst binnen de Language resource</dd>
 
   <dt>Chunking</dt>
   <dd>Tekst opdelen in kleinere stukken zodat elke chunk apart geëmbedded en geretrievet kan worden</dd>
@@ -1383,6 +1508,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
   <dt>Enrichment Tree</dt>
   <dd>Boomstructuur van skill inputs/outputs binnen een AI Search skillset</dd>
+
+  <dt>Entity Linking</dt>
+  <dd>Text Analytics feature die entiteiten disambigueert en koppelt aan Wikipedia — "Mars" → planeet vs merk</dd>
 
   <dt>Face API</dt>
   <dd>Azure AI service voor gezichtsdetectie, verificatie en identificatie — detectie is vrij, identificatie/verificatie vereist Limited Access goedkeuring</dd>
@@ -1447,6 +1575,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>Merge Skill</dt>
   <dd>AI Search skill die originele tekst en OCR-output samenvoegt tot één tekstveld</dd>
 
+  <dt>NER</dt>
+  <dd>Named Entity Recognition — detecteert en categoriseert entiteiten in tekst (personen, locaties, datums, organisaties)</dd>
+
   <dt>OCR</dt>
   <dd>Optical Character Recognition — tekst herkennen uit afbeeldingen/gescande documenten</dd>
 
@@ -1455,6 +1586,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
   <dt>Project</dt>
   <dd>Microsoft Foundry werkruimte binnen een Hub — bevat deployments, prompt flows, evaluations en agents</dd>
+
+  <dt>PII Detection</dt>
+  <dd>Text Analytics feature die persoonsgegevens detecteert en kan redacten — enige feature die tekst vervangt door ***</dd>
 
   <dt>Precision</dt>
   <dd>Van alle positieve voorspellingen, welk percentage klopt? Hoge precision = weinig false positives</dd>
@@ -1479,6 +1613,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
   <dt>Semantic Ranker</dt>
   <dd>AI Search post-processing stap die zoekresultaten herordent met een deep learning model + captions/answers toevoegt</dd>
+
+  <dt>SSML</dt>
+  <dd>Speech Synthesis Markup Language — XML-opmaak om TTS-output te sturen (pauzes, snelheid, toon, nadruk, stem kiezen)</dd>
 
   <dt>Spatial Analysis</dt>
   <dd>Azure AI Vision feature voor real-time people counting en movement detection via camera feeds — draait als Docker container op edge met NVIDIA GPU</dd>
@@ -1535,6 +1672,16 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 <div class="card">
 <table>
   <tr><th>Datum</th><th>Sessie</th><th>Wijzigingen</th></tr>
+  <tr>
+    <td>13 mrt 2026</td>
+    <td>9 — NLP intro</td>
+    <td>
+      <ul>
+        <li>Sectie 15 (NLP) toegevoegd: Text Analytics features, CLU (intents/entities/utterances), Custom QA, Orchestration workflow, Speech Services (STT/TTS/SSML/Translation), Translator</li>
+        <li>7 nieuwe lessen, 6 nieuwe begrippenlijst termen</li>
+      </ul>
+    </td>
+  </tr>
   <tr>
     <td>13 mrt 2026</td>
     <td>8 — Computer Vision</td>
@@ -1610,7 +1757,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
-<p class="updated">Laatste update: 13 maart 2026 · Sessie 8: Computer Vision</p>
+<p class="updated">Laatste update: 13 maart 2026 · Sessie 9: NLP intro</p>
 
 <script>
 // Open section when clicking TOC link
