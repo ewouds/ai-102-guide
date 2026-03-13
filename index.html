@@ -1447,6 +1447,11 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 <div class="lesson">💡 Document Translation is async/batch via Blob Storage — niet synchroon zoals Text Translation</div>
 <div class="lesson">💡 Custom Neural Voice vereist Limited Access goedkeuring</div>
 <div class="lesson">💡 Orchestration workflow: CLU project dat intents routeert naar CLU of Custom QA projecten</div>
+<div class="lesson">💡 Keyword Recognition draait on-device (wake word) — Intent Recognition is cloud-based (STT + CLU in één stap)</div>
+<div class="lesson">💡 Opinion Mining is geen aparte feature maar een parameter op Sentiment Analysis (opinionMining: true)</div>
+<div class="lesson">💡 Custom Translator vereist minimum 10.000 parallel sentences; kwaliteit gemeten met BLEU score</div>
+<div class="lesson">💡 Connected containers (Text Analytics, Speech, Translator, CLU) bellen periodiek Azure voor billing — alleen Custom Vision compact is echt offline</div>
+<div class="lesson">💡 Custom Text Classification: single-label (1 cat/doc) vs multi-label (meerdere) — verschil met CLU: classificatie = hele document, CLU = intents uit utterances</div>
 
 </div>
 </details>
@@ -1479,8 +1484,14 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>Caption</dt>
   <dd>Image Analysis feature die één beschrijvende zin genereert voor het hele beeld — gebruikt Florence model, ideaal voor alt-text</dd>
 
+  <dt>BLEU Score</dt>
+  <dd>Bilingual Evaluation Understudy — meet vertaalkwaliteit (0-100) door vergelijking met menselijke referentievertalingen</dd>
+
   <dt>CLU</dt>
   <dd>Conversational Language Understanding — opvolger van LUIS, begrijpt intents en entities uit vrije tekst binnen de Language resource</dd>
+
+  <dt>Custom Text Classification</dt>
+  <dd>Language service feature om documenten te classificeren (single-label of multi-label) — verschil met CLU: hele document vs individuele utterances</dd>
 
   <dt>Chunking</dt>
   <dd>Tekst opdelen in kleinere stukken zodat elke chunk apart geëmbedded en geretrievet kan worden</dd>
@@ -1563,6 +1574,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>L2 Re-ranker</dt>
   <dd>Tweede-fase ranking model dat initiële zoekresultaten herordent op semantische relevantie</dd>
 
+  <dt>Keyword Recognition</dt>
+  <dd>Speech feature die on-device luistert naar een wake word ("Hey Cortana") — geen cloud latency</dd>
+
   <dt>Limited Access</dt>
   <dd>Microsoft goedkeuringsproces voor gevoelige AI capabilities (gezichtsherkenning, identificatie) — aanvragen via formulier</dd>
 
@@ -1589,6 +1603,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
   <dt>PII Detection</dt>
   <dd>Text Analytics feature die persoonsgegevens detecteert en kan redacten — enige feature die tekst vervangt door ***</dd>
+
+  <dt>Opinion Mining</dt>
+  <dd>Parameter op Sentiment Analysis (opinionMining: true) die per-aspect sentiment geeft — "hotel=positive, ontbijt=negative"</dd>
 
   <dt>Precision</dt>
   <dd>Van alle positieve voorspellingen, welk percentage klopt? Hoge precision = weinig false positives</dd>
@@ -1674,6 +1691,16 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <tr><th>Datum</th><th>Sessie</th><th>Wijzigingen</th></tr>
   <tr>
     <td>13 mrt 2026</td>
+    <td>9b — NLP verdieping</td>
+    <td>
+      <ul>
+        <li>NLP lessen uitgebreid: Keyword/Intent Recognition, Opinion Mining, Custom Translator, Containers, Custom Text Classification</li>
+        <li>6 nieuwe lessen, 5 nieuwe begrippenlijst termen</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>13 mrt 2026</td>
     <td>9 — NLP intro</td>
     <td>
       <ul>
@@ -1757,7 +1784,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
-<p class="updated">Laatste update: 13 maart 2026 · Sessie 9: NLP intro</p>
+<p class="updated">Laatste update: 13 maart 2026 · Sessie 9b: NLP verdieping + hands-on</p>
 
 <script>
 // Open section when clicking TOC link

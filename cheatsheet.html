@@ -510,6 +510,21 @@
 <div class="mem">🧠 Translator (tekst→tekst) ≠ Speech Translation (spraak→spraak)</div>
 </div>
 
+<div class="box full">
+<div class="box-title">Exam Gotchas — NLP</div>
+<table>
+  <tr><th>Concept</th><th>Key fact</th></tr>
+  <tr><td><strong>Keyword Recognition</strong></td><td>On-device, wake word, geen cloud</td></tr>
+  <tr><td><strong>Intent Recognition</strong></td><td>STT + CLU in 1 stap (cloud)</td></tr>
+  <tr><td><strong>Entity Linking</strong></td><td>Disambiguatie → Wikipedia link</td></tr>
+  <tr><td><strong>PII</strong></td><td>Enige die redacteert (***)</td></tr>
+  <tr><td><strong>Opinion Mining</strong></td><td>Parameter op Sentiment, niet aparte feature</td></tr>
+  <tr><td><strong>Custom Translator</strong></td><td>Min 10.000 parallel sentences</td></tr>
+  <tr><td><strong>Containers</strong></td><td>Connected (billing), behalve Custom Vision compact = offline</td></tr>
+  <tr><td><strong>Custom Neural Voice</strong></td><td>Limited Access (net als Face API)</td></tr>
+</table>
+</div>
+
 </div>
 
 <!-- ===== DOC INTELLIGENCE (placeholder) ===== -->
@@ -547,6 +562,9 @@
   <tr><td>Compact domain</td><td>Betere accuracy</td><td>Voor <strong>edge export</strong> (ONNX/CoreML)</td></tr>
   <tr><td>Groundedness laag</td><td>Retrieval probleem</td><td><strong>Hallucination</strong> probleem</td></tr>
   <tr><td>Relevance laag</td><td>Model probleem</td><td><strong>Retrieval</strong> probleem</td></tr>
+  <tr><td>Keyword Recognition</td><td>Cloud-based</td><td><strong>On-device</strong> (wake word)</td></tr>
+  <tr><td>Intent Recognition</td><td>On-device</td><td><strong>Cloud</strong> (STT + CLU in 1)</td></tr>
+  <tr><td>Opinion Mining</td><td>Aparte feature</td><td><strong>Parameter</strong> op Sentiment Analysis</td></tr>
 </table>
 </div>
 
