@@ -329,8 +329,9 @@
   <li><a href="#agentic">11. Agentic Solutions</a></li>
   <li><a href="#ai-search">12. Azure AI Search</a></li>
   <li><a href="#rag">13. RAG Pattern</a></li>
-  <li><a href="#lessons">14. Geleerde Lessen</a></li>
-  <li><a href="#glossary">15. Begrippenlijst</a></li>
+  <li><a href="#computer-vision">14. Computer Vision</a></li>
+  <li><a href="#lessons">15. Geleerde Lessen</a></li>
+  <li><a href="#glossary">16. Begrippenlijst</a></li>
   <li><a href="#changelog">📋 Changelog</a></li>
 </ul>
 </nav>
@@ -1101,9 +1102,148 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
+<!-- ===== 14. COMPUTER VISION ===== -->
+<details id="computer-vision">
+<summary>14. Computer Vision</summary>
+<div class="section-content">
+
+<div class="card">
+<div class="card-title">Image Analysis 4.0 — Visual Features</div>
+<table>
+  <tr><th>Feature</th><th>Wat het doet</th><th>Output</th></tr>
+  <tr><td><strong>Caption</strong></td><td>Eén beschrijvende zin voor het hele beeld</td><td><code>"A dog playing in a park"</code> + confidence</td></tr>
+  <tr><td><strong>Dense Captions</strong></td><td>Caption per regio in het beeld</td><td>Meerdere zinnen + bounding boxes</td></tr>
+  <tr><td><strong>Tags</strong></td><td>Losse keywords/labels</td><td><code>["dog", "outdoor", "grass"]</code> + confidence per tag</td></tr>
+  <tr><td><strong>Object Detection</strong></td><td>Objecten lokaliseren</td><td>Naam + confidence + bounding box per object</td></tr>
+  <tr><td><strong>People Detection</strong></td><td>Personen lokaliseren (geen gezichtsherkenning)</td><td>Bounding box + confidence per persoon</td></tr>
+  <tr><td><strong>Smart Crops</strong></td><td>Slimme thumbnail generatie</td><td>Crop regio's die "interessante" delen behouden</td></tr>
+  <tr><td><strong>Read (OCR)</strong></td><td>Tekst extraheren uit beeld</td><td>Tekstregels + woorden + bounding polygons</td></tr>
+</table>
+<p><strong>Eén API call, meerdere features:</strong></p>
+<pre><code>POST /computervision/imageanalysis:analyze?api-version=2024-02-01
+     &features=caption,tags,objects,read</code></pre>
+<p>Model: <strong>Florence</strong> foundation model (Microsoft multimodal). Caption/Dense Captions alleen beschikbaar in bepaalde regio's (East US, West Europe, etc.).</p>
+</div>
+
+<div class="card">
+<div class="card-title">Caption vs Tags vs Dense Captions</div>
+<table>
+  <tr><th>Feature</th><th>Output</th><th>Scope</th><th>Use case</th></tr>
+  <tr><td><strong>Caption</strong></td><td>Eén zin</td><td>Heel beeld</td><td>Alt-text generatie</td></tr>
+  <tr><td><strong>Dense Captions</strong></td><td>Meerdere zinnen</td><td>Per regio + bounding box</td><td>Gedetailleerde beschrijving, accessibility</td></tr>
+  <tr><td><strong>Tags</strong></td><td>Losse keywords</td><td>Heel beeld</td><td>Categorisatie, zoeken</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">OCR Opties in Azure</div>
+<table>
+  <tr><th>Service</th><th>Best voor</th><th>Bijzonder</th></tr>
+  <tr><td><strong>Image Analysis Read</strong></td><td>Tekst in foto's, screenshots, straatborden</td><td>Deel van Vision API, snel, lightweight</td></tr>
+  <tr><td><strong>Document Intelligence</strong></td><td>Gestructureerde documenten (facturen, formulieren)</td><td>Begrijpt structuur, tabellen, key-value pairs</td></tr>
+  <tr><td><strong>AI Search OCR skill</strong></td><td>Bulk processing in indexing pipeline</td><td>Gebruikt Document Intelligence onder de motorkap</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Custom Vision</div>
+<h3>Twee projecttypes</h3>
+<table>
+  <tr><th>Type</th><th>Vraag</th><th>Output</th><th>Min. images per tag</th></tr>
+  <tr><td><strong>Image Classification</strong></td><td>"Wat is dit?"</td><td>Label(s) + confidence</td><td>5</td></tr>
+  <tr><td><strong>Object Detection</strong></td><td>"Wat zit waar?"</td><td>Label + confidence + bounding box</td><td>15</td></tr>
+</table>
+<p>Classification subtypes: <strong>Multiclass</strong> (één tag/beeld) vs <strong>Multilabel</strong> (meerdere tags/beeld)</p>
+
+<h3>Workflow</h3>
+<pre class="pipeline">1. <span class="node">Project aanmaken</span> (type + domain kiezen)
+2. <span class="node">Afbeeldingen uploaden</span> + labelen
+3. <span class="node">Trainen</span> (Quick of Advanced)
+4. <span class="node">Evalueren</span> (Precision / Recall / mAP)
+5. <span class="node">Publishen</span> → prediction endpoint
+6. <span class="node">Consumeren</span> via Prediction API</pre>
+
+<h3>Domains</h3>
+<table>
+  <tr><th>Domain</th><th>Wanneer</th></tr>
+  <tr><td>General</td><td>Default, breed</td></tr>
+  <tr><td>Food</td><td>Eten herkennen</td></tr>
+  <tr><td>Landmarks</td><td>Gebouwen, monumenten</td></tr>
+  <tr><td>Retail</td><td>Producten in schappen</td></tr>
+  <tr><td><strong>Compact varianten</strong></td><td><strong>Edge deployment</strong> → export naar ONNX, CoreML, TensorFlow</td></tr>
+</table>
+<div class="lesson">💡 "Model op mobiel/edge/offline" = Compact domain + export naar ONNX/CoreML/TensorFlow</div>
+
+<h3>Evaluatiemetrics</h3>
+<table>
+  <tr><th>Metric</th><th>Betekenis</th><th>Ezelsbruggetje</th></tr>
+  <tr><td><strong>Precision</strong></td><td>Van alles wat het model "X" noemt, hoeveel % klopt?</td><td>"Ben ik precies?"</td></tr>
+  <tr><td><strong>Recall</strong></td><td>Van alle echte X'en, hoeveel % vindt het model?</td><td>"Mis ik er geen?"</td></tr>
+  <tr><td><strong>mAP</strong></td><td>Mean Average Precision — overall score voor object detection</td><td>—</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Image Analysis vs Custom Vision — Wanneer Wat?</div>
+<table>
+  <tr><th>Scenario</th><th>Service</th></tr>
+  <tr><td>Beschrijf wat er op een foto staat</td><td>Image Analysis (Caption)</td></tr>
+  <tr><td>Herken 3 soorten bloemen</td><td>Custom Vision (Classification)</td></tr>
+  <tr><td>Detecteer defecten op productielijn</td><td>Custom Vision (Object Detection, Compact voor edge)</td></tr>
+  <tr><td>Tekst uit een foto halen</td><td>Image Analysis (Read)</td></tr>
+  <tr><td>Gegevens uit een factuur</td><td>Document Intelligence</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">Video Indexer</div>
+<ul>
+  <li><strong>Insights:</strong> transcripts, speakers, faces, emotions, topics, brands, OCR, scenes, keyframes</li>
+  <li><strong>Custom models:</strong> language model, brands model, person model</li>
+  <li><strong>ARM-connected account:</strong> koppelt aan eigen Azure AI Services (VNET, eigen keys)</li>
+  <li><strong>Widgets:</strong> Player + Insights widget — embed in eigen website</li>
+  <li><strong>Portal:</strong> videoindexer.ai + REST API</li>
+</ul>
+<p><strong>Exam tip:</strong> "maak video doorzoekbaar" of "zoeken op moment in video" = Video Indexer</p>
+</div>
+
+<div class="card">
+<div class="card-title">Spatial Analysis</div>
+<table>
+  <tr><th>Operatie</th><th>Wat</th><th>Use case</th></tr>
+  <tr><td><strong>PersonCount</strong></td><td>Hoeveel mensen in een zone</td><td>Bezetting wachtkamer</td></tr>
+  <tr><td><strong>PersonCrossingLine</strong></td><td>Mensen die een lijn passeren</td><td>Tellen bij ingang/uitgang</td></tr>
+  <tr><td><strong>PersonCrossingPolygon</strong></td><td>Mensen die een zone in/uit gaan</td><td>Zone monitoring</td></tr>
+  <tr><td><strong>PersonDistance</strong></td><td>Afstand tussen mensen</td><td>Social distancing</td></tr>
+</table>
+<ul>
+  <li>Draait als <strong>Docker container op edge</strong> (niet cloud)</li>
+  <li>Vereist <strong>NVIDIA GPU</strong> op edge device</li>
+  <li>Output: JSON events naar IoT Hub</li>
+  <li>Billing via Azure AI Vision resource</li>
+</ul>
+<div class="lesson">💡 "Real-time" + "camera" + "tellen/zones" = Spatial Analysis. "Hoeveel mensen nu" = PersonCount, "hoeveel passeerden" = PersonCrossingLine</div>
+</div>
+
+<div class="card">
+<div class="card-title">Face API</div>
+<table>
+  <tr><th>Capability</th><th>Limited Access nodig?</th></tr>
+  <tr><td>Face <strong>detection</strong> (waar is een gezicht?)</td><td>Nee</td></tr>
+  <tr><td>Face <strong>attributes</strong> (bril, blur, head pose)</td><td><strong>Ja</strong></td></tr>
+  <tr><td>Face <strong>verification</strong> (is dit dezelfde persoon?)</td><td><strong>Ja</strong></td></tr>
+  <tr><td>Face <strong>identification</strong> (wie is dit?)</td><td><strong>Ja</strong></td></tr>
+  <tr><td>Face <strong>grouping</strong></td><td><strong>Ja</strong></td></tr>
+</table>
+<p><strong>Kernregel:</strong> detectie is vrij, alles wat met identiteit te maken heeft vereist Limited Access goedkeuring van Microsoft.</p>
+</div>
+
+</div>
+</details>
+
 <!-- ===== 8. LESSONS ===== -->
 <details id="lessons">
-<summary>14. Geleerde Lessen</summary>
+<summary>15. Geleerde Lessen</summary>
 <div class="section-content">
 
 <div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
@@ -1132,13 +1272,21 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 <div class="lesson">💡 Blocklists blokkeren altijd, ongeacht severity score — voor exacte woorden/zinnen</div>
 <div class="lesson">💡 Agent Service bouwt voort op Assistants API maar voegt Bing, AI Search, Functions en OpenAPI als extra tools toe</div>
 <div class="lesson">💡 Fine-tuning is geen agent capability — agents gebruiken tools, geen model training</div>
+<div class="lesson">💡 Custom subdomain is verplicht voor token/Entra ID authenticatie bij Cognitive Services — zonder krijg je "provide custom subdomain" error</div>
+<div class="lesson">💡 Image Analysis 4.0 Florence features (Caption, Dense Captions, Smart Crops) zijn niet in alle regio's beschikbaar — check regionale beschikbaarheid</div>
+<div class="lesson">💡 Soft-deleted Cognitive Services resources moeten eerst gepurged worden voordat je dezelfde naam kunt hergebruiken</div>
+<div class="lesson">💡 Caption = beschrijvende zin, Tags = losse keywords — niet verwarren</div>
+<div class="lesson">💡 Custom Vision Compact domain = voor edge/offline deployment, exporteerbaar naar ONNX/CoreML/TensorFlow</div>
+<div class="lesson">💡 Precision = "ben ik precies?" (hoge precision, weinig false positives), Recall = "mis ik er geen?" (hoge recall, weinig false negatives)</div>
+<div class="lesson">💡 Spatial Analysis PersonCount = hoeveel nu aanwezig, PersonCrossingLine = hoeveel passeerden — verschil tussen aanwezigheid vs passage</div>
+<div class="lesson">💡 Face API: detectie is vrij, alles met identiteit (verification, identification, grouping) vereist Limited Access goedkeuring</div>
 
 </div>
 </details>
 
 <!-- ===== 9. GLOSSARY ===== -->
 <details id="glossary" open>
-<summary>15. Begrippenlijst</summary>
+<summary>16. Begrippenlijst</summary>
 <div class="section-content">
 
 <div class="card">
@@ -1161,6 +1309,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>Chunk Overlap</dt>
   <dd>Overlappende tekst tussen opeenvolgende chunks (bijv. 200 chars) — voorkomt context verlies op splitgrenzen</dd>
 
+  <dt>Caption</dt>
+  <dd>Image Analysis feature die één beschrijvende zin genereert voor het hele beeld — gebruikt Florence model, ideaal voor alt-text</dd>
+
   <dt>Chunking</dt>
   <dd>Tekst opdelen in kleinere stukken zodat elke chunk apart geëmbedded en geretrievet kan worden</dd>
 
@@ -1176,17 +1327,29 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>Cosine Similarity</dt>
   <dd>Maat voor gelijkenis tussen twee vectoren (1 = identiek, 0 = geen relatie)</dd>
 
+  <dt>Custom Vision</dt>
+  <dd>Azure service voor het trainen van eigen image classification of object detection modellen — compact domains voor edge export</dd>
+
+  <dt>Dense Captions</dt>
+  <dd>Image Analysis feature die meerdere beschrijvende zinnen genereert, elk voor een andere regio in het beeld, met bounding boxes</dd>
+
   <dt>Embedding</dt>
   <dd>Numerieke vectorrepresentatie van tekst die semantische betekenis vastlegt</dd>
 
   <dt>Enrichment Tree</dt>
   <dd>Boomstructuur van skill inputs/outputs binnen een AI Search skillset</dd>
 
+  <dt>Face API</dt>
+  <dd>Azure AI service voor gezichtsdetectie, verificatie en identificatie — detectie is vrij, identificatie/verificatie vereist Limited Access goedkeuring</dd>
+
   <dt>Few-shot</dt>
   <dd>Prompt techniek met voorbeelden van gewenste input→output in de prompt</dd>
 
   <dt>File Search</dt>
   <dd>Ingebouwde Assistants API tool die geüploade documenten doorzoekt via een Vector Store (automatisch chunking + embeddings)</dd>
+
+  <dt>Florence</dt>
+  <dd>Microsoft's multimodal foundation model achter Image Analysis 4.0 — maakt Caption, Dense Captions en Smart Crops mogelijk</dd>
 
   <dt>Function Calling</dt>
   <dd>Mechanisme waarbij het model tools/functies kan aanroepen — het model beslist en vraagt, jouw app voert uit</dd>
@@ -1227,6 +1390,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>L2 Re-ranker</dt>
   <dd>Tweede-fase ranking model dat initiële zoekresultaten herordent op semantische relevantie</dd>
 
+  <dt>Limited Access</dt>
+  <dd>Microsoft goedkeuringsproces voor gevoelige AI capabilities (gezichtsherkenning, identificatie) — aanvragen via formulier</dd>
+
   <dt>MaaS</dt>
   <dd>Models as a Service — serverless deployment in Foundry Model Catalog, pay-per-token, geen infra beheer (voor Llama, Mistral, etc.)</dd>
 
@@ -1245,6 +1411,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>Project</dt>
   <dd>Microsoft Foundry werkruimte binnen een Hub — bevat deployments, prompt flows, evaluations en agents</dd>
 
+  <dt>Precision</dt>
+  <dd>Van alle positieve voorspellingen, welk percentage klopt? Hoge precision = weinig false positives</dd>
+
   <dt>Prompt Shields</dt>
   <dd>Content Safety feature dat jailbreak-pogingen en indirect prompt injection detecteert</dd>
 
@@ -1254,6 +1423,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>RAG</dt>
   <dd>Retrieval-Augmented Generation — relevante documenten ophalen en meegeven als context aan een LLM</dd>
 
+  <dt>Recall</dt>
+  <dd>Van alle werkelijke positieven, welk percentage wordt gevonden? Hoge recall = weinig false negatives</dd>
+
   <dt>Run</dt>
   <dd>Assistants API: uitvoering van een assistant op een thread — asynchroon, met statussen (queued → in_progress → completed/requires_action)</dd>
 
@@ -1262,6 +1434,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 
   <dt>Semantic Ranker</dt>
   <dd>AI Search post-processing stap die zoekresultaten herordent met een deep learning model + captions/answers toevoegt</dd>
+
+  <dt>Spatial Analysis</dt>
+  <dd>Azure AI Vision feature voor real-time people counting en movement detection via camera feeds — draait als Docker container op edge met NVIDIA GPU</dd>
 
   <dt>Skillset</dt>
   <dd>AI Search verrijkingspipeline — keten van skills die documenten transformeren tijdens indexering</dd>
@@ -1296,6 +1471,9 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
   <dt>Vector Search</dt>
   <dd>Zoeken op basis van semantische afstand tussen embedding vectoren (cosine similarity)</dd>
 
+  <dt>Video Indexer</dt>
+  <dd>Azure service die video's analyseert en doorzoekbaar maakt — extraheert transcripts, speakers, topics, faces, brands met tijdstempels</dd>
+
   <dt>Zero-shot</dt>
   <dd>Prompt zonder voorbeelden — direct een vraag stellen aan het model</dd>
 </dl>
@@ -1312,6 +1490,17 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 <div class="card">
 <table>
   <tr><th>Datum</th><th>Sessie</th><th>Wijzigingen</th></tr>
+  <tr>
+    <td>13 mrt 2026</td>
+    <td>8 — Computer Vision</td>
+    <td>
+      <ul>
+        <li>Sectie 14 (Computer Vision) toegevoegd: Image Analysis 4.0 features, Caption vs Tags vs Dense Captions, OCR opties, Custom Vision (types, workflow, domains, compact, metrics), Video Indexer, Spatial Analysis (operaties), Face API + Limited Access</li>
+        <li>Secties hernummerd (15-16)</li>
+        <li>9 nieuwe lessen, 12 nieuwe begrippenlijst termen</li>
+      </ul>
+    </td>
+  </tr>
   <tr>
     <td>12 mrt 2026</td>
     <td>8-11 — Prompt Flow Lab + Content Safety Lab + Agentic</td>
@@ -1376,7 +1565,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
-<p class="updated">Laatste update: 11 maart 2026 · Sessie 7: Function Calling + Assistants API + Foundry + Content Safety + Agentic</p>
+<p class="updated">Laatste update: 13 maart 2026 · Sessie 8: Computer Vision</p>
 
 <script>
 // Open section when clicking TOC link
