@@ -69,9 +69,14 @@
   .full { grid-column: 1 / -1; }
 
   .weights { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
-  .weight-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; text-align: center; flex: 1; min-width: 120px; }
+  .weight-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; text-align: center; flex: 1; min-width: 120px; cursor: pointer; transition: all 0.2s; user-select: none; }
+  .weight-item:hover { border-color: var(--accent); }
+  .weight-item.active { border-color: var(--accent); background: #1e3a5f; box-shadow: 0 0 8px rgba(56,189,248,0.3); }
   .weight-pct { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
   .weight-label { font-size: 0.72rem; color: var(--muted); }
+
+  .domain-section { transition: opacity 0.2s, max-height 0.3s; }
+  .domain-section.hidden { display: none; }
 
   a { color: var(--accent); }
   .back { font-size: 0.8rem; margin-bottom: 0.5rem; }
@@ -99,15 +104,16 @@
 <p class="sub">Dagelijkse herhaling — alles wat je vanbuiten moet kennen. Laatst bijgewerkt: 13 mrt 2026 (t/m Week 6)</p>
 
 <div class="weights">
-  <div class="weight-item"><div class="weight-pct">20-25%</div><div class="weight-label">Plan & Manage</div></div>
-  <div class="weight-item"><div class="weight-pct">15-20%</div><div class="weight-label">Generative AI</div></div>
-  <div class="weight-item"><div class="weight-pct">5-10%</div><div class="weight-label">Agentic</div></div>
-  <div class="weight-item"><div class="weight-pct">10-15%</div><div class="weight-label">Computer Vision</div></div>
-  <div class="weight-item"><div class="weight-pct">15-20%</div><div class="weight-label">NLP</div></div>
-  <div class="weight-item"><div class="weight-pct">15-20%</div><div class="weight-label">Knowledge Mining</div></div>
+  <div class="weight-item active" data-domain="plan"><div class="weight-pct">20-25%</div><div class="weight-label">Plan & Manage</div></div>
+  <div class="weight-item active" data-domain="genai"><div class="weight-pct">15-20%</div><div class="weight-label">Generative AI</div></div>
+  <div class="weight-item active" data-domain="agentic"><div class="weight-pct">5-10%</div><div class="weight-label">Agentic</div></div>
+  <div class="weight-item active" data-domain="vision"><div class="weight-pct">10-15%</div><div class="weight-label">Computer Vision</div></div>
+  <div class="weight-item active" data-domain="nlp"><div class="weight-pct">15-20%</div><div class="weight-label">NLP</div></div>
+  <div class="weight-item active" data-domain="mining"><div class="weight-pct">15-20%</div><div class="weight-label">Knowledge Mining</div></div>
 </div>
 
 <!-- ===== PLAN & MANAGE ===== -->
+<div class="domain-section" data-domain="plan">
 <h2>📋 Plan & Manage (20-25%)</h2>
 <div class="grid">
 
@@ -180,6 +186,8 @@
 </div>
 
 <!-- ===== GENERATIVE AI ===== -->
+</div>
+<div class="domain-section" data-domain="genai">
 <h2>🤖 Generative AI (15-20%)</h2>
 <div class="grid">
 
@@ -248,6 +256,8 @@
 </div>
 
 <!-- ===== KNOWLEDGE MINING ===== -->
+</div>
+<div class="domain-section" data-domain="mining">
 <h2>🔍 Knowledge Mining (15-20%)</h2>
 <div class="grid">
 
@@ -297,6 +307,8 @@
 </div>
 
 <!-- ===== AGENTIC ===== -->
+</div>
+<div class="domain-section" data-domain="agentic">
 <h2>🤖 Agentic (5-10%)</h2>
 <div class="grid">
 
@@ -324,6 +336,8 @@
 </div>
 
 <!-- ===== PROMPT FLOW ===== -->
+</div>
+<div class="domain-section" data-domain="plan">
 <h2>🔄 Prompt Flow & Evaluations</h2>
 <div class="grid">
 
@@ -357,6 +371,8 @@
 </div>
 
 <!-- ===== COMPUTER VISION ===== -->
+</div>
+<div class="domain-section" data-domain="vision">
 <h2>👁️ Computer Vision (10-15%)</h2>
 <div class="grid">
 
@@ -428,6 +444,8 @@
 </div>
 
 <!-- ===== NLP (placeholder) ===== -->
+</div>
+<div class="domain-section" data-domain="nlp">
 <h2>💬 NLP (15-20%) — <span class="tag t-y">WEEK 7</span></h2>
 <div class="grid">
 <div class="box full" style="opacity:0.5;">
@@ -439,6 +457,8 @@
 </div>
 
 <!-- ===== DOC INTELLIGENCE (placeholder) ===== -->
+</div>
+<div class="domain-section" data-domain="mining">
 <h2>📄 Document Intelligence (15-20%) — <span class="tag t-y">WEEK 8</span></h2>
 <div class="grid">
 <div class="box full" style="opacity:0.5;">
@@ -450,6 +470,8 @@
 </div>
 
 <!-- ===== GOTCHAS ===== -->
+</div>
+<div class="domain-section domain-gotchas" data-domain="gotchas">
 <h2>⚡ Exam Gotchas</h2>
 <div class="grid">
 
@@ -473,10 +495,47 @@
 </div>
 
 </div>
+</div>
 
 <p style="color:var(--muted);font-size:0.75rem;text-align:right;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:0.5rem;">
   AI-102 Cheat Sheet · Laatste update: 13 mrt 2026 · <a href="index.html">Volledige Reference Guide</a>
 </p>
+
+<script>
+(function() {
+  const buttons = document.querySelectorAll('.weight-item[data-domain]');
+  const sections = document.querySelectorAll('.domain-section[data-domain]');
+  const gotchas = document.querySelector('.domain-section[data-domain="gotchas"]');
+  
+  // Track active state
+  function getActiveDomains() {
+    return new Set(Array.from(buttons).filter(b => b.classList.contains('active')).map(b => b.dataset.domain));
+  }
+
+  function updateVisibility() {
+    const active = getActiveDomains();
+    const allActive = active.size === buttons.length;
+    const noneActive = active.size === 0;
+    
+    sections.forEach(sec => {
+      const domain = sec.dataset.domain;
+      if (domain === 'gotchas') {
+        // Gotchas always visible unless nothing is active
+        sec.classList.toggle('hidden', noneActive);
+      } else {
+        sec.classList.toggle('hidden', !allActive && !active.has(domain));
+      }
+    });
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      updateVisibility();
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
