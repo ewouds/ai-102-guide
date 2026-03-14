@@ -375,7 +375,10 @@
   <li><a href="#rag">13. RAG Pattern</a></li>
   <li><a href="#computer-vision">14. Computer Vision</a></li>
   <li><a href="#nlp">15. NLP</a></li>
-  <li><a href="#lessons">16. Geleerde Lessen</a></li>
+  <li><a href="#doc-intel">16. Document Intelligence</a></li>
+  <li><a href="#content-understanding">17. Content Understanding</a></li>
+  <li><a href="#knowledge-store">18. Knowledge Store</a></li>
+  <li><a href="#lessons">19. Geleerde Lessen</a></li>
   <li><a href="#glossary">17. Begrippenlijst</a></li>
   <li><a href="#changelog">📋 Changelog</a></li>
 </ul>
@@ -1402,9 +1405,146 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
+<!-- ===== 16. DOCUMENT INTELLIGENCE ===== -->
+<details id="doc-intel">
+<summary>16. Document Intelligence</summary>
+<div class="section-content">
+
+<h3>Overzicht</h3>
+<p>Azure AI Document Intelligence (voorheen Form Recognizer) extraheert tekst, structuur, key-value pairs, tabellen en specifieke velden uit documenten via AI. Gaat verder dan OCR — het <strong>begrijpt</strong> de structuur.</p>
+
+<h3>3 Model-categorieën</h3>
+<table>
+<tr><th>Categorie</th><th>Beschrijving</th><th>Training nodig?</th></tr>
+<tr><td><strong>Prebuilt</strong></td><td>Door MS voorgetraind (Invoice, Receipt, ID, Business Card, W-2, Health Insurance, Contract)</td><td>Nee</td></tr>
+<tr><td><strong>Custom Template</strong></td><td>Vaste layout documenten, ~5 samples</td><td>Ja (labelen)</td></tr>
+<tr><td><strong>Custom Neural</strong></td><td>Variabele layouts, ~10-50+ samples, handschrift</td><td>Ja (labelen)</td></tr>
+</table>
+
+<h3>General Models</h3>
+<table>
+<tr><th>Model</th><th>Output</th></tr>
+<tr><td><strong>Read</strong></td><td>Puur OCR: tekst + taal</td></tr>
+<tr><td><strong>Layout</strong></td><td>Tekst + tabellen + paragrafen met rollen + selection marks + barcodes</td></tr>
+</table>
+<p>💡 Alle prebuilt models bouwen voort op Layout.</p>
+
+<h3>Composed Models</h3>
+<ul>
+<li>Combineer tot <strong>200 custom models</strong> in één endpoint</li>
+<li>Vereist een <strong>Custom Classifier</strong> die het documenttype bepaalt → routeert naar juiste submodel</li>
+<li>Elke submodel geeft z'n eigen <code>docType</code> terug</li>
+<li>Classifier: min. 5 samples per documenttype, tot 500 types</li>
+</ul>
+
+<h3>API Patroon</h3>
+<ul>
+<li><strong>Async</strong>: POST → 202 Accepted + <code>Operation-Location</code> header → GET poll tot klaar</li>
+<li>Auth: Bearer token (Entra ID) of API key</li>
+<li>Input: URL (urlSource) of binary upload (Content-Type: application/pdf/image)</li>
+<li>Pricing: per pagina, verschilt per model</li>
+</ul>
+
+<h3>Features</h3>
+<ul>
+<li><strong>Key-value pairs</strong>: formuliervelden → "Naam": "Ewoud Smets"</li>
+<li><strong>Tabellen</strong>: rij/kolom-spanning, headers, geneste tabellen</li>
+<li><strong>Selection marks</strong>: checkboxes → selected/unselected</li>
+<li><strong>Query fields</strong> (add-on): natural language query op documentniveau</li>
+<li><strong>Barcodes & formules</strong>: Layout model detecteert deze</li>
+</ul>
+
+<h3>Exam Tips</h3>
+<ul>
+<li>Read vs Layout vs Prebuilt: weet wanneer je welk model kiest</li>
+<li>Custom Template = <strong>vaste</strong> layout, Custom Neural = <strong>variabele</strong> layout</li>
+<li>Training vereist <strong>Azure Blob Storage</strong> met gelabelde data</li>
+<li>F0 tier: max 2 pagina's per doc, S0: max 2000</li>
+<li>Custom subdomain vereist voor token auth</li>
+</ul>
+
+</div>
+</details>
+
+<!-- ===== 17. CONTENT UNDERSTANDING ===== -->
+<details id="content-understanding">
+<summary>17. Content Understanding</summary>
+<div class="section-content">
+
+<h3>Wat is het?</h3>
+<p>Breder platform binnen Azure AI Foundry. Verwerkt niet alleen documenten maar ook <strong>images, video en audio</strong> — multi-modal.</p>
+
+<h3>Mogelijkheden</h3>
+<ul>
+<li><strong>Analyseren</strong>: OCR, layout-extractie, object detectie</li>
+<li><strong>Samenvatten</strong>: documenten/video's/audio condenseren</li>
+<li><strong>Classificeren</strong>: documenttype bepalen</li>
+<li><strong>Extraheren</strong>: specifieke velden via schema</li>
+</ul>
+
+<h3>Hoe werkt het?</h3>
+<ul>
+<li>Maak een <strong>Analyzer</strong> met field schema + processing pipeline</li>
+<li>Geen training nodig — <strong>LLM-backed extractie</strong></li>
+<li>Stuur content → krijg gestructureerde JSON terug</li>
+</ul>
+
+<h3>Verschil met Document Intelligence</h3>
+<table>
+<tr><th></th><th>Document Intelligence</th><th>Content Understanding</th></tr>
+<tr><td><strong>Input</strong></td><td>Documenten (PDF, images)</td><td>Docs + video + audio + images</td></tr>
+<tr><td><strong>Aanpak</strong></td><td>Prebuilt/custom models, labelen</td><td>Schema + LLM-backed</td></tr>
+<tr><td><strong>Training</strong></td><td>Ja (custom models)</td><td>Nee</td></tr>
+</table>
+
+</div>
+</details>
+
+<!-- ===== 18. KNOWLEDGE STORE ===== -->
+<details id="knowledge-store">
+<summary>18. Knowledge Store</summary>
+<div class="section-content">
+
+<h3>Wat is het?</h3>
+<p>Onderdeel van AI Search. Slaat verrijkte data op vanuit een skillset pipeline naar Azure Storage.</p>
+
+<h3>3 Projectie-types</h3>
+<table>
+<tr><th>Type</th><th>Opslag</th><th>Gebruik</th></tr>
+<tr><td><strong>Table projections</strong></td><td>Azure Table Storage</td><td>Gestructureerde rijen → Power BI analytics</td></tr>
+<tr><td><strong>Object projections</strong></td><td>Azure Blob Storage</td><td>Volledige verrijkte JSON per document</td></tr>
+<tr><td><strong>File projections</strong></td><td>Azure Blob Storage</td><td>Genormaliseerde images/bestanden uit documenten</td></tr>
+</table>
+
+<h3>Configuratie</h3>
+<ul>
+<li>Configureer <code>knowledgeStore</code> in de <strong>skillset</strong> definitie</li>
+<li>Wijs naar een storage connection string</li>
+<li>Gebruik <strong>Shaper skill</strong> of inline shaping voor projecties</li>
+<li>Storage account moet in <strong>dezelfde regio</strong> als Search service</li>
+</ul>
+
+<h3>Wanneer gebruiken?</h3>
+<ul>
+<li>Data exploratie buiten Search (Power BI)</li>
+<li>Downstream processing (andere apps)</li>
+<li>Archivering van verrijkte content</li>
+<li>Training data genereren voor ML models</li>
+</ul>
+
+<h3>Exam Tips</h3>
+<ul>
+<li>Knowledge Store is <strong>optioneel</strong> — Search index werkt prima zonder</li>
+<li>Table projections: <code>generatedKeyName</code> voor cross-table joins</li>
+<li>Power BI → Table projections</li>
+</ul>
+
+</div>
+</details>
+
 <!-- ===== 8. LESSONS ===== -->
 <details id="lessons">
-<summary>16. Geleerde Lessen</summary>
+<summary>19. Geleerde Lessen</summary>
 <div class="section-content">
 
 <div class="lesson">💡 OCR is nodig voor gescande PDF's — standaard extractie haalt geen tekst uit afbeeldingen</div>
@@ -1784,7 +1924,7 @@ Zelfde URL: <span class="highlight">ai.azure.com</span> — zelfde product, nieu
 </div>
 </details>
 
-<p class="updated">Laatste update: 13 maart 2026 · Sessie 9b: NLP verdieping + hands-on</p>
+<p class="updated">Laatste update: 14 maart 2026 · Sessie 10: Document Intelligence + Content Understanding + Knowledge Store</p>
 
 <script>
 // Open section when clicking TOC link
