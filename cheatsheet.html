@@ -568,11 +568,43 @@
 </table>
 </div>
 
+<div class="box full">
+<div class="box-title">🔴 Practice Assessment Fouten (Assessment #1 & #2)</div>
+<table>
+  <tr><th>Situatie</th><th>Fout</th><th>Juist</th></tr>
+  <tr><td>Private Endpoint + Disabled</td><td>= Selected Networks</td><td>Meest restrictief: <strong>alleen VNet</strong>, géén publiek</td></tr>
+  <tr><td>Multiclass vs Multilabel</td><td>Verwisseld</td><td>Multi<strong>class</strong> = 1 tag, Multi<strong>label</strong> = meerdere tags</td></tr>
+  <tr><td>BLEU score "high quality"</td><td>80-100</td><td><strong>40-59</strong> = high quality (60+ is zeldzaam)</td></tr>
+  <tr><td>Facetable vs Filterable</td><td>Filterable voor hit counts</td><td><strong>Facetable</strong> = hit counts per categorie</td></tr>
+  <tr><td>Custom skill type</td><td>CustomEntityLookupSkill</td><td><strong>WebApiSkill</strong> = custom web app aanroepen</td></tr>
+  <tr><td>EntityLinkingSkill</td><td>= NER</td><td>= <strong>Wikipedia disambiguatie</strong> (Linking = Links)</td></tr>
+  <tr><td>Container "mismatch" error</td><td>Verkeerde regio/image</td><td>Verkeerde <strong>API key</strong></td></tr>
+  <tr><td>Active learning suggestions</td><td>Logging aanzetten</td><td>Wacht <strong>30 minuten</strong> (delay is normaal)</td></tr>
+  <tr><td>Indexer stages (initial run)</td><td>Create source → index → run</td><td><strong>Cracking → Field mapping → Skillset → Output mapping</strong></td></tr>
+  <tr><td>Custom translation docs</td><td>"Be strict"</td><td><strong>"Be liberal"</strong> — meer data = beter</td></tr>
+  <tr><td>Video Indexer keyframes</td><td>Download ZIP thumbnails</td><td><strong>3 API calls</strong>: upload → get index → get thumbnail</td></tr>
+  <tr><td>Doc Intelligence Read model</td><td>Ondersteunt TXT</td><td>PDF, <strong>Word, Excel</strong> — géén TXT/JSON/XML</td></tr>
+  <tr><td>Doc Intelligence prebuilts</td><td>W-2 is geen prebuilt</td><td>Prebuilts: Invoice, Receipt, <strong>W-2</strong>, ID, Health Insurance, Business Card</td></tr>
+  <tr><td>System message capabilities</td><td>Definieert data sources</td><td>Personality + <strong>should/shouldn't do</strong></td></tr>
+  <tr><td>Image Analysis features=read,description</td><td>Alleen description</td><td><strong>Beide</strong>: OCR tekst + beschrijving</td></tr>
+  <tr><td>OCR feature naam (Vision)</td><td>"handwriting analysis"</td><td><strong>OCR / Read</strong> (doet printed + handwritten)</td></tr>
+  <tr><td>Custom Vision domains</td><td>General voor food images</td><td>Kies <strong>specifiek domain</strong> (Food, Retail, etc.)</td></tr>
+  <tr><td>Auth methoden AI Services</td><td>Kerberos/SAML</td><td><strong>Subscription key</strong> + <strong>Entra ID</strong> (alleen deze 2)</td></tr>
+  <tr><td>Semantic Kernel</td><td>Niet gekend</td><td>Framework voor <strong>AI orchestratie + multi-agent</strong></td></tr>
+  <tr><td>Model version control</td><td>Disable auto-update</td><td>Select <strong>specific version</strong> + test apart</td></tr>
+  <tr><td>Responsible AI: safe outputs</td><td>User feedback</td><td>Red team + Content Safety API + <strong>document decision logic</strong></td></tr>
+  <tr><td>Orchestration workflow</td><td>Add entities directly</td><td>Connect CLU + QA <strong>from same resource</strong></td></tr>
+  <tr><td>Doc extraction for compliance</td><td>Manual preprocess</td><td>Blob Storage + <strong>Layout model</strong></td></tr>
+  <tr><td>Prompt eng best practices (MS)</td><td>CoT/few-shot/temperature</td><td><strong>Be Specific, Be Descriptive, Order Matters</strong></td></tr>
+  <tr><td>Agent real-time data</td><td>AI Search</td><td><strong>Bing Search</strong> tool (internet) vs AI Search (eigen docs)</td></tr>
+</table>
+</div>
+
 </div>
 </div>
 
 <p style="color:var(--muted);font-size:0.75rem;text-align:right;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:0.5rem;">
-  AI-102 Cheat Sheet · Laatste update: 13 mrt 2026 · <a href="index.html">Volledige Reference Guide</a>
+  AI-102 Cheat Sheet · Laatste update: 16 mrt 2026 · <a href="index.html">Volledige Reference Guide</a>
 </p>
 
 <script>
