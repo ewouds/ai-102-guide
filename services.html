@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure AI Services Overzicht — AI-102 Reference Guide</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #334155;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #475569;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1 { font-size: 2rem; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
+  h2 { font-size: 1.4rem; color: var(--accent2); margin-top: 2.5rem; margin-bottom: 1rem; border-left: 4px solid var(--accent2); padding-left: 0.75rem; }
+  h3 { font-size: 1.1rem; color: var(--green); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; padding: 1rem; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .dot-vision { background: var(--accent); }
+  .dot-language { background: var(--green); }
+  .dot-speech { background: var(--yellow); }
+  .dot-decision { background: var(--orange); }
+  .dot-genai { background: var(--accent2); }
+  .dot-search { background: var(--pink); }
+  .dot-docintel { background: var(--red); }
+
+  .service-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1rem; }
+  .service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    border-left: 4px solid var(--accent);
+  }
+  .service-card.cat-vision { border-left-color: var(--accent); }
+  .service-card.cat-language { border-left-color: var(--green); }
+  .service-card.cat-speech { border-left-color: var(--yellow); }
+  .service-card.cat-decision { border-left-color: var(--orange); }
+  .service-card.cat-genai { border-left-color: var(--accent2); }
+  .service-card.cat-search { border-left-color: var(--pink); }
+  .service-card.cat-docintel { border-left-color: var(--red); }
+
+  .service-name { font-weight: 700; font-size: 1.05rem; color: var(--accent); margin-bottom: 0.25rem; }
+  .service-card.cat-language .service-name { color: var(--green); }
+  .service-card.cat-speech .service-name { color: var(--yellow); }
+  .service-card.cat-decision .service-name { color: var(--orange); }
+  .service-card.cat-genai .service-name { color: var(--accent2); }
+  .service-card.cat-search .service-name { color: var(--pink); }
+  .service-card.cat-docintel .service-name { color: var(--red); }
+
+  .service-type { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .service-desc { font-size: 0.92rem; margin-bottom: 0.5rem; }
+  .service-models { font-size: 0.85rem; color: var(--muted); }
+  .service-models strong { color: var(--text); }
+  .service-use { font-size: 0.85rem; margin-top: 0.5rem; }
+  .service-use em { color: var(--yellow); font-style: normal; }
+
+  .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .tag-exam { background: #7c3aed33; color: #a78bfa; }
+  .tag-limited { background: #f8717133; color: var(--red); }
+  .tag-preview { background: #fbbf2433; color: var(--yellow); }
+  .tag-free { background: #4ade8033; color: var(--green); }
+
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.88rem; }
+  th { background: var(--surface2); color: var(--accent); text-align: left; padding: 0.6rem 0.75rem; border-bottom: 2px solid var(--accent); }
+  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: var(--surface); }
+
+  .nav { margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">← <a href="index.html">Reference Guide</a> · <a href="cheatsheet.html">Cheat Sheet</a></div>
+
+<h1>🧩 Azure AI Services Overzicht</h1>
+<p class="subtitle">Alle services, modellen en types die je moet kennen voor AI-102 — in één overzicht.</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="dot dot-vision"></span> Computer Vision</div>
+  <div class="legend-item"><span class="dot dot-language"></span> Language</div>
+  <div class="legend-item"><span class="dot dot-speech"></span> Speech</div>
+  <div class="legend-item"><span class="dot dot-decision"></span> Decision / Safety</div>
+  <div class="legend-item"><span class="dot dot-genai"></span> Generative AI</div>
+  <div class="legend-item"><span class="dot dot-search"></span> Search / Knowledge Mining</div>
+  <div class="legend-item"><span class="dot dot-docintel"></span> Document Intelligence</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>🔮 Generative AI</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-genai">
+  <div class="service-name">Azure OpenAI Service <span class="tag tag-exam">15-20% exam</span></div>
+  <div class="service-type">Cognitive Service · Managed API</div>
+  <div class="service-desc">Toegang tot OpenAI-modellen via Azure met enterprise security, content filtering en RBAC.</div>
+  <div class="service-models"><strong>Modellen:</strong> GPT-4o, GPT-4.1, GPT-4.1-mini, GPT-3.5-turbo, o1, o3-mini (reasoning), DALL-E 3 (images), Whisper (audio→tekst), text-embedding-ada-002 / text-embedding-3-* (embeddings)</div>
+  <div class="service-use"><em>Gebruik:</em> Chat/completion, RAG generatie, function calling, embeddings genereren, image generatie, audio transcriptie</div>
+</div>
+
+<div class="service-card cat-genai">
+  <div class="service-name">Assistants API</div>
+  <div class="service-type">Azure OpenAI feature</div>
+  <div class="service-desc">Persistent threads met state management. Ondersteunt tools (code interpreter, file search, function calling) en automatische context management.</div>
+  <div class="service-models"><strong>Onderdelen:</strong> Assistant → Thread → Message → Run → Tool outputs</div>
+  <div class="service-use"><em>Gebruik:</em> Stateful conversaties, code uitvoeren, file analysis, multi-turn met tools</div>
+</div>
+
+<div class="service-card cat-genai">
+  <div class="service-name">On Your Data</div>
+  <div class="service-type">Azure OpenAI feature</div>
+  <div class="service-desc">Koppel Azure AI Search direct aan een chat completion endpoint. Automatische RAG zonder eigen orchestratie.</div>
+  <div class="service-use"><em>Gebruik:</em> Snelle RAG setup, chatbot op eigen documenten, citaties uit zoekresultaten</div>
+</div>
+
+<div class="service-card cat-genai">
+  <div class="service-name">Microsoft Foundry (voorheen AI Studio)</div>
+  <div class="service-type">Platform · Hub/Project model</div>
+  <div class="service-desc">Unified platform voor AI development. Hub = gedeelde resources, Project = werkruimte. Model Catalog met 1600+ modellen.</div>
+  <div class="service-models"><strong>Deployment types:</strong> MaaS (pay-per-token, serverless), Managed Compute (dedicated VM), Global/Standard/Provisioned</div>
+  <div class="service-use"><em>Gebruik:</em> Model selectie & deployment, Prompt Flow, evaluaties, agent orchestratie</div>
+</div>
+
+<div class="service-card cat-genai">
+  <div class="service-name">Foundry Agent Service <span class="tag tag-exam">5-10% exam</span></div>
+  <div class="service-type">Foundry feature</div>
+  <div class="service-desc">Bouw AI agents met tools (Bing Search, Azure AI Search, file search, Azure Functions, OpenAPI). Agent loop: model beslist autonoom welke tools nodig zijn.</div>
+  <div class="service-use"><em>Gebruik:</em> Autonome agents, multi-step taken, real-time data ophalen, multi-agent orchestratie</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>👁️ Computer Vision</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-vision">
+  <div class="service-name">Azure AI Vision (Image Analysis 4.0) <span class="tag tag-exam">10-15% exam</span></div>
+  <div class="service-type">Cognitive Service · REST API</div>
+  <div class="service-desc">Analyse van afbeeldingen: captions, tags, objecten, mensen, OCR (Read), smart crops, dense captions. Gebaseerd op Florence foundation model.</div>
+  <div class="service-models"><strong>Features:</strong> caption, denseCaptions, tags, objects, people, smartCrops, read</div>
+  <div class="service-use"><em>Gebruik:</em> Beeldbeschrijving, object detectie, tekst uit afbeeldingen (OCR), thumbnail generatie</div>
+</div>
+
+<div class="service-card cat-vision">
+  <div class="service-name">Custom Vision</div>
+  <div class="service-type">Standalone service · Training + Prediction endpoint</div>
+  <div class="service-desc">Train eigen classificatie- of detectiemodellen met je eigen afbeeldingen. Ondersteunt compact domains voor edge/ONNX export.</div>
+  <div class="service-models"><strong>Types:</strong> Multiclass classification (1 tag/image), Multilabel classification (meerdere tags), Object Detection (bounding boxes)</div>
+  <div class="service-use"><em>Gebruik:</em> Productinspectie, custom herkenning, edge deployment (compact models → ONNX/TensorFlow/CoreML)</div>
+</div>
+
+<div class="service-card cat-vision">
+  <div class="service-name">Face API</div>
+  <div class="service-type">Cognitive Service · REST API</div>
+  <div class="service-desc">Gezichtsdetectie (attributen, landmarks) is vrij beschikbaar. Identificatie, verificatie en groepering vereisen Limited Access goedkeuring.</div>
+  <div class="service-models"><strong>Operaties:</strong> Detect (vrij), Identify, Verify, Group, Find Similar <span class="tag tag-limited">Limited Access</span></div>
+  <div class="service-use"><em>Gebruik:</em> Gezichtsherkenning, identity verification, aanwezigheidscontrole</div>
+</div>
+
+<div class="service-card cat-vision">
+  <div class="service-name">Video Indexer</div>
+  <div class="service-type">Standalone service · ARM-connected accounts</div>
+  <div class="service-desc">Automatische extractie van inzichten uit video: transcript, sprekers, topics, gezichten, merken, emoties, scenes, keyframes.</div>
+  <div class="service-use"><em>Gebruik:</em> Video doorzoekbaar maken, ondertiteling, content moderatie, media analyse</div>
+</div>
+
+<div class="service-card cat-vision">
+  <div class="service-name">Spatial Analysis</div>
+  <div class="service-type">Edge container · Azure IoT / Docker</div>
+  <div class="service-desc">Real-time analyse van beweging in videostreams via edge containers. Geen video opslag in de cloud.</div>
+  <div class="service-models"><strong>Operaties:</strong> PersonCount, PersonCrossingLine, PersonCrossingPolygon, PersonDistance</div>
+  <div class="service-use"><em>Gebruik:</em> Winkelbezetting, social distancing, verkeersstromen, zones bewaken</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>💬 Language (NLP)</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-language">
+  <div class="service-name">Azure AI Language <span class="tag tag-exam">15-20% exam</span></div>
+  <div class="service-type">Cognitive Service · REST API</div>
+  <div class="service-desc">Tekst analyse: sentiment, key phrases, NER, PII detectie + redactie, entity linking (Wikipedia disambiguatie), taaldetectie.</div>
+  <div class="service-models"><strong>Pre-built features:</strong> Sentiment Analysis, Key Phrase Extraction, NER, PII Detection, Entity Linking, Language Detection, Opinion Mining</div>
+  <div class="service-use"><em>Gebruik:</em> Klanttevredenheid, PII masking, entiteiten extraheren, meertalige content analyseren</div>
+</div>
+
+<div class="service-card cat-language">
+  <div class="service-name">CLU (Conversational Language Understanding)</div>
+  <div class="service-type">Language feature · Custom model</div>
+  <div class="service-desc">Train custom modellen om intents en entities te herkennen in gesprekstekst. Opvolger van LUIS.</div>
+  <div class="service-models"><strong>Onderdelen:</strong> Intents, Entities (learned, list, prebuilt, regex), Utterances (min. 15 per intent aanbevolen)</div>
+  <div class="service-use"><em>Gebruik:</em> Chatbot intent herkenning, commando interpretatie, slot filling</div>
+</div>
+
+<div class="service-card cat-language">
+  <div class="service-name">Custom Question Answering</div>
+  <div class="service-type">Language feature · Knowledge Base</div>
+  <div class="service-desc">FAQ knowledge base met multi-turn conversaties, chit-chat, en orchestration workflow. Opvolger van QnA Maker.</div>
+  <div class="service-models"><strong>Bronnen:</strong> URLs, documenten, handmatige QA-paren, multi-language (per KB of per QA-paar)</div>
+  <div class="service-use"><em>Gebruik:</em> FAQ bots, helpdeskautomatisering, gestructureerde Q&A</div>
+</div>
+
+<div class="service-card cat-language">
+  <div class="service-name">Custom Text Classification</div>
+  <div class="service-type">Language feature · Custom model</div>
+  <div class="service-desc">Train modellen om tekst te classificeren in je eigen categorieën.</div>
+  <div class="service-models"><strong>Types:</strong> Single-label (1 categorie per tekst), Multi-label (meerdere categorieën)</div>
+  <div class="service-use"><em>Gebruik:</em> Document routing, ticket classificatie, content tagging</div>
+</div>
+
+<div class="service-card cat-language">
+  <div class="service-name">Custom NER (Named Entity Recognition)</div>
+  <div class="service-type">Language feature · Custom model</div>
+  <div class="service-desc">Extraheer domein-specifieke entiteiten uit tekst met je eigen gelabelde data.</div>
+  <div class="service-use"><em>Gebruik:</em> Contract analyse, medische dossiers, domein-specifieke extractie</div>
+</div>
+
+<div class="service-card cat-language">
+  <div class="service-name">Translator</div>
+  <div class="service-type">Cognitive Service · REST API</div>
+  <div class="service-desc">Tekst- en documentvertaling, transliteratie, en custom vertaalmodellen.</div>
+  <div class="service-models"><strong>Types:</strong> Text Translation (sync), Document Translation (async/batch), Custom Translator (min. 10K parallel zinnen, BLEU score 0-100)</div>
+  <div class="service-use"><em>Gebruik:</em> Meertalige apps, document vertaling, domein-specifieke vertaling</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>🎙️ Speech</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-speech">
+  <div class="service-name">Speech Services</div>
+  <div class="service-type">Cognitive Service · SDK + REST</div>
+  <div class="service-desc">Spraak naar tekst, tekst naar spraak, spraakvertaling, en sprekerherkenning.</div>
+  <div class="service-models">
+    <strong>STT varianten:</strong> Real-time, Batch (async, SAS URL), Custom Speech (eigen data/model)<br>
+    <strong>TTS:</strong> Neural voices, SSML (pitch, rate, emphasis, breaks, phoneme)<br>
+    <strong>Overig:</strong> Speech Translation, Speaker Recognition (verification + identification), Custom Neural Voice <span class="tag tag-limited">Limited Access</span>
+  </div>
+  <div class="service-use"><em>Gebruik:</em> Transcriptie, voorlezen, realtime vertaling, biometrie</div>
+</div>
+
+<div class="service-card cat-speech">
+  <div class="service-name">Keyword Recognition</div>
+  <div class="service-type">On-device · Speech SDK</div>
+  <div class="service-desc">Wake word detectie die volledig lokaal draait op het device. Geen cloud calls nodig.</div>
+  <div class="service-use"><em>Gebruik:</em> "Hey Cortana"-achtige activatie, privacy-sensitive scenario's</div>
+</div>
+
+<div class="service-card cat-speech">
+  <div class="service-name">Intent Recognition</div>
+  <div class="service-type">Speech SDK + CLU</div>
+  <div class="service-desc">Combineert STT en CLU in één aanroep: spraak → tekst → intent + entities.</div>
+  <div class="service-use"><em>Gebruik:</em> Voice commands, spraakgestuurde bots</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>🔍 Search & Knowledge Mining</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-search">
+  <div class="service-name">Azure AI Search <span class="tag tag-exam">15-20% exam</span></div>
+  <div class="service-type">PaaS · Managed search platform</div>
+  <div class="service-desc">Full-text, vector en hybrid zoeken met AI-verrijking via skillsets. Indexing pipeline: Data Source → Skillset → Indexer → Index.</div>
+  <div class="service-models">
+    <strong>Zoektypen:</strong><br>
+    • BM25 (full-text, keyword matching)<br>
+    • Vector (cosine similarity, HNSW algoritme)<br>
+    • Hybrid (BM25 + vector parallel, RRF fusie)<br>
+    • Hybrid + Semantic Ranker (+ LLM re-ranking, captions, answers)
+  </div>
+  <div class="service-use"><em>Gebruik:</em> RAG retrieval, document search, e-commerce, kennisbank</div>
+</div>
+
+<div class="service-card cat-search">
+  <div class="service-name">Built-in Skills (Skillset Pipeline)</div>
+  <div class="service-type">AI Search feature</div>
+  <div class="service-desc">AI-verrijking tijdens indexering. Skills voegen metadata toe aan documenten.</div>
+  <div class="service-models">
+    <strong>Belangrijke skills:</strong><br>
+    • <strong>OcrSkill</strong> — tekst uit afbeeldingen/gescande PDFs<br>
+    • <strong>SplitSkill</strong> — chunking (tekst splitsen)<br>
+    • <strong>AzureOpenAIEmbeddingSkill</strong> — vector embeddings genereren<br>
+    • <strong>MergeSkill</strong> — velden samenvoegen<br>
+    • <strong>EntityRecognitionSkill</strong> — NER<br>
+    • <strong>EntityLinkingSkill</strong> — Wikipedia disambiguatie<br>
+    • <strong>DocumentExtractionSkill</strong> — file content extractie<br>
+    • <strong>ShaperSkill</strong> — output structureren voor Knowledge Store
+  </div>
+  <div class="service-use"><em>Gebruik:</em> OCR pipeline, chunk-level indexing, verrijkte metadata toevoegen</div>
+</div>
+
+<div class="service-card cat-search">
+  <div class="service-name">Knowledge Store</div>
+  <div class="service-type">AI Search feature · 3 projectie-types</div>
+  <div class="service-desc">Sla verrijkte data op buiten de index voor downstream analyse.</div>
+  <div class="service-models">
+    <strong>Projecties:</strong><br>
+    • <strong>Table</strong> → Azure Table Storage (gestructureerd, Power BI)<br>
+    • <strong>Object</strong> → Blob Storage als JSON<br>
+    • <strong>File</strong> → Blob Storage als bestanden (afbeeldingen, genormaliseerde docs)
+  </div>
+  <div class="service-use"><em>Gebruik:</em> Analytics, Power BI dashboards, data export, downstream processing</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>📄 Document Intelligence</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-docintel">
+  <div class="service-name">Azure AI Document Intelligence <span class="tag tag-exam">15-20% exam</span></div>
+  <div class="service-type">Cognitive Service · REST API</div>
+  <div class="service-desc">Extractie van tekst, structuur, tabellen en velden uit documenten. Voorheen Form Recognizer.</div>
+  <div class="service-models">
+    <strong>3 categorieën:</strong><br>
+    • <strong>General:</strong> Read (OCR), Layout (structuur + tabellen), General Document<br>
+    • <strong>Prebuilt:</strong> Invoice, Receipt, W-2, ID Document, Health Insurance Card, Business Card<br>
+    • <strong>Custom:</strong> Template (vaste layout), Neural (variabele layout), Composed (routing via Classifier)
+  </div>
+  <div class="service-use"><em>Gebruik:</em> Facturenverwerking, ID verificatie, formulier extractie, custom document types</div>
+</div>
+
+<div class="service-card cat-docintel">
+  <div class="service-name">Content Understanding</div>
+  <div class="service-type">Azure AI Service · Multi-modal <span class="tag tag-preview">Preview</span></div>
+  <div class="service-desc">LLM-backed, multi-modale analyse van documenten, afbeeldingen, video én audio. Schema-based extractie.</div>
+  <div class="service-use"><em>Gebruik:</em> Complexe documenten met mixed media, video/audio analyse, gestructureerde output</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>🛡️ Content Safety & Responsible AI</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-decision">
+  <div class="service-name">Azure AI Content Safety</div>
+  <div class="service-type">Cognitive Service · REST API</div>
+  <div class="service-desc">Detectie van schadelijke content in tekst en afbeeldingen.</div>
+  <div class="service-models">
+    <strong>HVSS categorieën:</strong> Hate, Violence, Sexual, Self-harm (severity 0-6, threshold 0/2/4/6)<br>
+    <strong>Features:</strong> Blocklists (custom woorden), Prompt Shields (jailbreak + indirect injection), Groundedness Detection (hallucination check), Protected Material Detection
+  </div>
+  <div class="service-use"><em>Gebruik:</em> Content filtering in Azure OpenAI, UGC moderatie, prompt beveiliging</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>🔧 Platform & Orchestratie</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+
+<div class="service-card cat-genai">
+  <div class="service-name">Prompt Flow / Workflows</div>
+  <div class="service-type">Foundry feature</div>
+  <div class="service-desc">Visuele orchestratie van LLM-pipelines. Bouwen, testen, evalueren en deployen als endpoint.</div>
+  <div class="service-models">
+    <strong>Flow types:</strong> Standard (LLM chains), Chat (conversation), Evaluation (metrics berekenen)<br>
+    <strong>Evaluatie metrics:</strong> Groundedness, Relevance, Coherence, Fluency, Similarity, F1
+  </div>
+  <div class="service-use"><em>Gebruik:</em> RAG pipelines bouwen, A/B testing met variants, kwaliteitsmonitoring</div>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>📊 Quick Reference Tabel</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div style="overflow-x: auto;">
+<table>
+<tr>
+  <th>Service</th>
+  <th>Categorie</th>
+  <th>Type</th>
+  <th>Exam Gewicht</th>
+  <th>Key Takeaway</th>
+</tr>
+<tr><td>Azure OpenAI</td><td>Generative AI</td><td>Managed API</td><td>15-20%</td><td>GPT, DALL-E, embeddings via Azure</td></tr>
+<tr><td>Assistants API</td><td>Generative AI</td><td>OpenAI feature</td><td>↑</td><td>Stateful threads + tools</td></tr>
+<tr><td>On Your Data</td><td>Generative AI</td><td>OpenAI feature</td><td>↑</td><td>Instant RAG via Search koppeling</td></tr>
+<tr><td>Foundry</td><td>Platform</td><td>Hub/Project</td><td>20-25%</td><td>Unified AI dev platform</td></tr>
+<tr><td>Agent Service</td><td>Agentic</td><td>Foundry feature</td><td>5-10%</td><td>Autonome agents met tools</td></tr>
+<tr><td>Prompt Flow</td><td>Orchestratie</td><td>Foundry feature</td><td>↑</td><td>LLM pipeline builder + eval</td></tr>
+<tr><td>AI Vision</td><td>Vision</td><td>Cognitive Service</td><td>10-15%</td><td>Image Analysis 4.0, Florence model</td></tr>
+<tr><td>Custom Vision</td><td>Vision</td><td>Standalone</td><td>↑</td><td>Train eigen classificatie/detectie</td></tr>
+<tr><td>Face API</td><td>Vision</td><td>Cognitive Service</td><td>↑</td><td>Detect (vrij) vs Identify (Limited Access)</td></tr>
+<tr><td>Video Indexer</td><td>Vision</td><td>Standalone</td><td>↑</td><td>Video insights extractie</td></tr>
+<tr><td>Spatial Analysis</td><td>Vision</td><td>Edge container</td><td>↑</td><td>Real-time beweging op edge</td></tr>
+<tr><td>AI Language</td><td>NLP</td><td>Cognitive Service</td><td>15-20%</td><td>Sentiment, NER, PII, entity linking</td></tr>
+<tr><td>CLU</td><td>NLP</td><td>Custom model</td><td>↑</td><td>Intent + entity herkenning (opvolger LUIS)</td></tr>
+<tr><td>Custom QA</td><td>NLP</td><td>Knowledge Base</td><td>↑</td><td>FAQ bot (opvolger QnA Maker)</td></tr>
+<tr><td>Translator</td><td>NLP</td><td>Cognitive Service</td><td>↑</td><td>Tekst + document vertaling</td></tr>
+<tr><td>Speech Services</td><td>Speech</td><td>Cognitive Service</td><td>↑</td><td>STT, TTS, SSML, vertaling</td></tr>
+<tr><td>AI Search</td><td>Search</td><td>PaaS</td><td>15-20%</td><td>BM25 + vector + hybrid + semantic</td></tr>
+<tr><td>Knowledge Store</td><td>Search</td><td>Search feature</td><td>↑</td><td>Table/Object/File projecties</td></tr>
+<tr><td>Doc Intelligence</td><td>Document</td><td>Cognitive Service</td><td>15-20%</td><td>Prebuilt + custom + composed models</td></tr>
+<tr><td>Content Understanding</td><td>Document</td><td>Multi-modal</td><td>↑</td><td>LLM-backed, docs+images+video+audio</td></tr>
+<tr><td>Content Safety</td><td>Safety</td><td>Cognitive Service</td><td>20-25%</td><td>HVSS, blocklists, prompt shields</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2>🧠 Deployment & Auth Patterns</h2>
+<!-- ═══════════════════════════════════════════════ -->
+
+<div class="service-grid">
+<div class="service-card cat-genai">
+  <div class="service-name">Multi-service vs Single-service Resource</div>
+  <div class="service-desc">
+    <strong>Multi-service:</strong> Eén resource, één key voor Vision + Language + Speech etc. Eén endpoint.<br>
+    <strong>Single-service:</strong> Dedicated resource per service. Eigen key, eigen endpoint. Meer controle over billing en access.
+  </div>
+</div>
+
+<div class="service-card cat-genai">
+  <div class="service-name">Authenticatie</div>
+  <div class="service-desc">
+    <strong>API Key:</strong> Ocp-Apim-Subscription-Key header. Simpel maar minder veilig.<br>
+    <strong>Entra ID (Bearer token):</strong> Managed Identity of service principal. Enterprise-grade. Vereist custom subdomain.<br>
+    <strong>RBAC rollen:</strong> Cognitive Services User (consume), Cognitive Services Contributor (manage), specifieke rollen per service.
+  </div>
+</div>
+
+<div class="service-card cat-genai">
+  <div class="service-name">Containers (Offline)</div>
+  <div class="service-desc">
+    Sommige services draaien als Docker container voor on-premise/edge.<br>
+    <strong>Connected:</strong> periodieke billing call naar Azure.<br>
+    <strong>Disconnected:</strong> volledig offline (commitment plan, Limited Access).<br>
+    <strong>Exam tip:</strong> "Docker" of "container" = offline scenario. "Mismatch" error = verkeerde API key.
+  </div>
+</div>
+
+<div class="service-card cat-genai">
+  <div class="service-name">Networking</div>
+  <div class="service-desc">
+    <strong>Public:</strong> open internet (default).<br>
+    <strong>Selected Networks:</strong> specifieke VNets/IPs (firewall rules).<br>
+    <strong>Disabled + Private Endpoint:</strong> alleen via VNet, geen publiek verkeer. Meest restrictief.<br>
+    <strong>Exam tip:</strong> Private Endpoint + Disabled ≠ Selected Networks!
+  </div>
+</div>
+</div>
+
+<p style="margin-top: 3rem; color: var(--muted); font-size: 0.85rem; text-align: center;">
+  Laatste update: 16 maart 2026 · <a href="index.html">← Terug naar Reference Guide</a>
+</p>
+
+</body>
+</html>
