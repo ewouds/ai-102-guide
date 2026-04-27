@@ -35,8 +35,19 @@ Oorspronkelijk gebouwd voor AI-102 prep, maar werkt voor elke certificering.
 - **Hands-on focus**: theorie → quiz → lab, niet alleen lezen
 - **Voortgang tracking**: quiz scores worden bijgehouden om groei te meten
 
+## GitHub Pages Reference Guide
+
+Een belangrijk onderdeel van deze aanpak: na elke studiesessie wordt een **reference guide** bijgewerkt en gepubliceerd via GitHub Pages. Dit geeft je:
+
+- Een levende samenvatting die meegroeit met je studie
+- Een doorzoekbare referentie tijdens het examen (open book prep)
+- Zichtbare voortgang
+
+De repo zelf dient als zowel studieplan áls gepubliceerde guide. Zet GitHub Pages aan op je repo (Settings → Pages → Deploy from branch: `main`).
+
 ## Aanpassen
 
 - Pas het studieplan aan voor jouw certificering (fases, topics, tijdlijn)
 - De coach werkt voor elke Azure cert (AZ-104, AZ-305, AI-102, DP-100, etc.)
 - Voeg je eigen resources toe (MS Learn paths, YouTube, labs)
+- Pas de HTML template aan naar je eigen stijl
